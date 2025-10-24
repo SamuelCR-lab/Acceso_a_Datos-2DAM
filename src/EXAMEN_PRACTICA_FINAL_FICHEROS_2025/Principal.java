@@ -19,14 +19,12 @@ public class Principal {
 	static Scanner entrada = new Scanner(System.in);
 
 	public static void main(String[] args) {
-		boolean bandera = true,contrCorrecta = true;
-		int opcion,id;
+		boolean bandera = true;
+		int opcion;
 		do{
+			
 			System.out.println("Bienvenido al vivero Carías Ramos");
-			System.out.print("Introduce su número de idenificación: ");
-			id = controlErroresInt();
-			System.out.print("Introduce la contraseña: ");
-			String contraseña = entrada.nextLine();
+			boolean contrCorrecta = true;
 			
 			if (contrCorrecta) {
 				System.out.println("");
@@ -41,6 +39,7 @@ public class Principal {
 					break;
 				}
 			}
+			
 		}while (!bandera);
 
 	}
@@ -91,6 +90,17 @@ public class Principal {
 			}
 			}catch(Exception e){e.getStackTrace();
 			}
+	}
+	public static boolean comprobacionContraseña() {
+		int id;
+		System.out.print("Introduce su número de idenificación: ");
+		id = controlErroresInt();
+		System.out.print("Introduce la contraseña: ");
+		String contraseña = entrada.nextLine();
+		try {
+			
+		}catch(Exception a){a.getStackTrace();}
+		return true;
 	}
 	
 }
