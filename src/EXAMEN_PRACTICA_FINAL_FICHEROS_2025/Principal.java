@@ -78,9 +78,9 @@ public class Principal {
 						String nombre = plantas.getElementsByTagName("nombre").item(0).getTextContent();
 						String foto = plantas.getElementsByTagName("foto").item(0).getTextContent();
 						String descripcion = plantas.getElementsByTagName("descripcion").item(0).getTextContent();
-						plantasDat.seek(4*saltoID);
 						float precio = plantasDat.readFloat();
 						int stock = plantasDat.readInt();
+						plantasDat.seek(4*saltoID);
 						plantasO.add(new plantasClass(codigo,nombre,foto,descripcion,precio,stock));
 					}
 				}
@@ -97,7 +97,9 @@ public class Principal {
 		id = controlErroresInt();
 		System.out.print("Introduce la contraseña: ");
 		String contraseña = entrada.nextLine();
-		try {
+		File ficheroEmpleados = new File("empleado.dat");
+		try	{
+			
 			
 		}catch(Exception a){a.getStackTrace();}
 		return true;
