@@ -21,24 +21,29 @@ public class Principal {
 	public static void main(String[] args) {
 		boolean bandera = true;
 		int opcion;
+		System.out.println("Bienvenido al vivero Carías Ramos");
+		EmpleadoClass empleado1 = new EmpleadoClass(1,"Juan","1234","Vendedor");
+		EmpleadoClass empleado2 = new EmpleadoClass(2,"Sopita","5678","Gestor");
+		EmpleadoClass empleado3 = new EmpleadoClass(3,"Samuel","246810","Gestor");
+		EmpleadoClass empleado4 = new EmpleadoClass(4,"Isabella","13579","Vendedor");
+		EmpleadoClass[] arrayEmpleados = {empleado1,empleado2,empleado3,empleado4};
+
 		do{
 			
-			System.out.println("Bienvenido al vivero Carías Ramos");
-			boolean contrCorrecta = true;
+			int contrCorrecta = comprobacionContraseña(arrayEmpleados);
 			
-			if (contrCorrecta) {
-				System.out.println("");
-				
-				
-				opcion = controlErroresInt();
-				switch (opcion) {
+			
+				switch (contrCorrecta) {
 				case 1:
-					Catalogo();
+					
 					break;
 				case 2:
+					Catalogo();
 					break;
+				default:
+					System.out.println("Escribe bien, por favor.");	
 				}
-			}
+			
 			
 		}while (!bandera);
 
@@ -91,18 +96,28 @@ public class Principal {
 			}catch(Exception e){e.getStackTrace();
 			}
 	}
-	public static boolean comprobacionContraseña() {
-		int id;
-		System.out.print("Introduce su número de idenificación: ");
+	public static int comprobacionContraseña(EmpleadoClass[] arrayEmpleados) {
+		int id,respuesta=0;
+		System.out.print("Introduce su número de identificación: ");
 		id = controlErroresInt();
 		System.out.print("Introduce la contraseña: ");
 		String contraseña = entrada.nextLine();
-		File ficheroEmpleados = new File("empleado.dat");
+		for(int i=0;i<4;i++) {
+			if((arrayEmpleados[i].iD == id)&&(arrayEmpleados[i].contraseña.equals(contraseña))){
+				if(arrayEmpleados[i].cargo.equals("Gestor")) {
+					respuesta=1;
+				}else {
+					respuesta =2;
+				}
+			}else {
+				System.out.println("Has introducido el ID o la contraseña mal.");
+			}
+		}
+		/*File ficheroEmpleados = new File("empleado.dat");
 		try	{
-			
-			
-		}catch(Exception a){a.getStackTrace();}
-		return true;
+		
+		}catch(Exception a){a.getStackTrace();}*/
+		return respuesta;
 	}
 	
 }
