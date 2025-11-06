@@ -36,10 +36,7 @@ public class EmpleadoClass {
 	public void setCargo(String cargo) {
 		this.cargo = cargo;
 	}
-	@Override     
-	public String toString() {                                                                                       
-		return "Empleados iD=" + iD + ", nombre=" + nombre + ", contraseña=" + contraseña + ", cargo=" + cargo;      
-	}                                                                                                                
+
 	
 	
 }

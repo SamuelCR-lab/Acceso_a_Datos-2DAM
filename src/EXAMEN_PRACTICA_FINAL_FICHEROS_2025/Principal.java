@@ -1,5 +1,4 @@
 package EXAMEN_PRACTICA_FINAL_FICHEROS_2025;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -27,7 +26,7 @@ public class Principal {
 		EmpleadoClass empleado3 = new EmpleadoClass(3,"Samuel","246810","Gestor");
 		EmpleadoClass empleado4 = new EmpleadoClass(4,"Isabella","13579","Vendedor");
 		EmpleadoClass[] arrayEmpleados = {empleado1,empleado2,empleado3,empleado4};
-
+		
 		do{
 			
 			int contrCorrecta = comprobacionContraseña(arrayEmpleados);
@@ -76,7 +75,7 @@ public class Principal {
 			for (int i =0;i<cantidad;i++) {
 				Node nodo = lista.item(i);
 				if (nodo.getNodeType()== Node.ELEMENT_NODE) {
-					int saltoID=4;
+					int saltoID=0;
 					try (RandomAccessFile plantasDat = new RandomAccessFile (ficheroDAT,"rw")) {
 						Element plantas = (Element)nodo;
 						int codigo = Integer.parseInt(plantas.getElementsByTagName("codigo").item(0).getTextContent());
@@ -85,16 +84,16 @@ public class Principal {
 						String descripcion = plantas.getElementsByTagName("descripcion").item(0).getTextContent();
 						float precio = plantasDat.readFloat();
 						int stock = plantasDat.readInt();
-						plantasDat.seek(4*saltoID);
+						plantasDat.seek(12*saltoID);
 						plantasO.add(new plantasClass(codigo,nombre,foto,descripcion,precio,stock));
+						saltoID += 1; 
 					}
 				}
 			}
 			for(plantasClass elemento:plantasO) {
 				System.out.println(elemento.toString());
 			}
-			}catch(Exception e){e.getStackTrace();
-			}
+			}catch(Exception e){e.getStackTrace();}
 	}
 	public static int comprobacionContraseña(EmpleadoClass[] arrayEmpleados) {
 		int id,respuesta=0;
@@ -106,6 +105,7 @@ public class Principal {
 			if((arrayEmpleados[i].iD == id)&&(arrayEmpleados[i].contraseña.equals(contraseña))){
 				if(arrayEmpleados[i].cargo.equals("Gestor")) {
 					respuesta=1;
+					
 				}else {
 					respuesta =2;
 				}
@@ -119,5 +119,40 @@ public class Principal {
 		}catch(Exception a){a.getStackTrace();}*/
 		return respuesta;
 	}
-	
+	public static void menuVendedores() {
+		System.out.println("Bienvenido al menú de Vendedores.");
+		
+		int eleccion = controlErroresInt();
+		switch (eleccion) {
+		case 1:
+			Catalogo();
+			break;
+		case 2:
+			//GenerarVentas;
+			break;
+		case 3:
+			//buscadorTickects;
+			break;
+		default:
+			System.out.println("Escribe bien, por favor.");	
+		}
+	}
+	public static void menuGestores() {
+		System.out.println("Bienvenido al menú de Gestores.");
+		
+		int eleccion = controlErroresInt();
+		switch (eleccion) {
+		case 1:
+			Catalogo();
+			break;
+		case 2:
+			//GenerarVentas;
+			break;
+		case 3:
+			//buscadorTickects;
+			break;
+		default:
+			System.out.println("Escribe bien, por favor.");	
+		}
+	}
 }
