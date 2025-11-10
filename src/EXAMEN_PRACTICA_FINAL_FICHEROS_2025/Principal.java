@@ -1,8 +1,14 @@
 package EXAMEN_PRACTICA_FINAL_FICHEROS_2025;
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Scanner;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,37 +23,10 @@ import org.w3c.dom.NodeList;
 public class Principal {
 	static Scanner entrada = new Scanner(System.in);
 	static ArrayList <plantasClass> plantas;
-
-	public static void main(String[] args) {
-		boolean bandera = true;
-		System.out.println("Bienvenido al vivero Carías Ramos");
-		EmpleadoClass empleado1 = new EmpleadoClass(1,"Juan","1234","Vendedor");
-		EmpleadoClass empleado2 = new EmpleadoClass(2,"Sopita","5678","Gestor");
-		EmpleadoClass empleado3 = new EmpleadoClass(3,"Samuel","246810","Gestor");
-		EmpleadoClass empleado4 = new EmpleadoClass(4,"Isabella","13579","Vendedor");
-		EmpleadoClass[] arrayEmpleados = {empleado1,empleado2,empleado3,empleado4};
-		
-		do{
-			
-			int contrCorrecta = comprobacionContraseña(arrayEmpleados);
-			
-			
-				switch (contrCorrecta) {
-				case 1:
-					menuGestores();
-					break;
-				case 2:
-					menuVendedores();
-					break;
-				default:
-					System.out.println("Escribe bien, por favor.");	
-				}
-			
-			
-		}while (!bandera);
-
-	}
-	
+	static ArrayList <Empleado> empleados;
+	static int idIS;
+	static String nombreEmpleadoIS;
+	static Date fecha;
 	public static int controlErroresInt() {
 		boolean error = true;
 		int dato =0;
@@ -62,6 +41,7 @@ public class Principal {
 		}while(error);
 		return dato;
 	}
+	
 	public static void Catalogo() {
 		try {
 			File ficheroDAT = new File("plantas.dat");
@@ -73,43 +53,46 @@ public class Principal {
 			NodeList lista = doc.getElementsByTagName("planta");
 			ArrayList<plantasClass> plantasO = new ArrayList<>();
 			int cantidad = lista.getLength();
+			RandomAccessFile plantasDat = new RandomAccessFile (ficheroDAT,"r");
 			for (int i =0;i<cantidad;i++) {
 				Node nodo = lista.item(i);
+				
 				if (nodo.getNodeType()== Node.ELEMENT_NODE) {
-					int saltoID=0;
-					try (RandomAccessFile plantasDat = new RandomAccessFile (ficheroDAT,"r")) {
-						Element plantas = (Element)nodo;
-						int codigo = Integer.parseInt(plantas.getElementsByTagName("codigo").item(0).getTextContent());
-						String nombre = plantas.getElementsByTagName("nombre").item(0).getTextContent();
-						String foto = plantas.getElementsByTagName("foto").item(0).getTextContent();
-						String descripcion = plantas.getElementsByTagName("descripcion").item(0).getTextContent();
-						float precio = plantasDat.readFloat();
-						int stock = plantasDat.readInt();
-						plantasDat.seek(12*saltoID);
-						plantasO.add(new plantasClass(codigo,nombre,foto,descripcion,precio,stock));
-						saltoID += 1; 
-					}
+					Element plantas = (Element)nodo;
+					int codigo = plantasDat.readInt();
+					float precio = plantasDat.readFloat();
+					int stock = plantasDat.readInt();
+					String nombre = plantas.getElementsByTagName("nombre").item(0).getTextContent();
+					String foto = plantas.getElementsByTagName("foto").item(0).getTextContent();
+					String descripcion = plantas.getElementsByTagName("descripcion").item(0).getTextContent();
+					plantasO.add(new plantasClass(codigo,nombre,foto,descripcion,precio,stock));
+						
 				}
 			}
-			/*System.out.println("¿ Quieres añadir algo a la cesta de la compra ?, si(1) o no(2) ");
-			int venta = controlErroresInt();
-			if (venta==1) {
-				generarVentas(plantasO);
-			}*/
 			plantas = plantasO;
+			plantasDat.close();
 			}catch(Exception e){e.getStackTrace();}
 		
 	}
+	public static void lecturaEmpleados() {
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("empleado.dat"))) {
+			ArrayList<Empleado> listaEmpleados = (ArrayList<Empleado>) ois.readObject();
+			for (Empleado empleado : listaEmpleados) {
+	            System.out.println(empleado);
+	        }
+			empleados = listaEmpleados;
+        } catch (EOFException e) {
+            // fin de fichero
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+		
 	public static void mostrarCatalogo(ArrayList <plantasClass> plantasO){
 			
 			for(plantasClass mostrarPlantas:plantasO) {
 				System.out.println(mostrarPlantas.toString());
 			}
-			/*System.out.println("¿ Quieres añadir algo a la cesta de la compra ?, si(1) o no(2) ");
-			int venta = controlErroresInt();
-			if (venta==1) {
-				generarVentas(plantasO);
-			}*/
 
 	}
 	public static void guardarPlanta(ArrayList<plantasClass>plantasO) {
@@ -120,19 +103,20 @@ public class Principal {
 				ficheroDAT.createNewFile();
 				ficheroXML.createNewFile();
 			}
+			
 		}catch(IOException i) {i.getStackTrace();}
 	}
-	public static int comprobacionContraseña(EmpleadoClass[] arrayEmpleados) {
-		int id,respuesta=0;
+	public static int comprobacionContraseña(ArrayList<Empleado>empleadosO) {
+		int respuesta=0;
 		boolean datosCorrectos=true;
 		do {
 			System.out.print("Introduce su número de identificación: ");
-			id = controlErroresInt();
+			idIS = controlErroresInt();
 			System.out.print("Introduce la contraseña: ");
-			String contraseña = entrada.nextLine();
-			for(int i=0;i<arrayEmpleados.length;i++) {
-				if((arrayEmpleados[i].iD == id)&&(arrayEmpleados[i].contraseña.equals(contraseña))){
-					if(arrayEmpleados[i].cargo.equals("Gestor")) {
+			String contrasenia = entrada.nextLine();
+			for(Empleado empleado:empleadosO) {
+				if((empleado.getIdentificacion() == idIS)&&(empleado.getPassword().equals(contrasenia))){
+					if(empleado.getCargo().equals("Gestor")) {
 						datosCorrectos = false;
 						return respuesta=1;
 					}else {
@@ -155,21 +139,21 @@ public class Principal {
 		for(plantasClass ventasPlantas :plantasO) {
 			if (codigoPlantaVenta == ventasPlantas.codigo) {
 				if(cantidadPlantaVenta < ventasPlantas.stock) {
+					ventasPlantas.stock = ventasPlantas.stock - cantidadPlantaVenta;
 					return ventasPlantas;
 				}else {
 					return null;
 				}
-			}else {
-				System.out.println("No se ha encontrado una planta con ese código.");
-				return null;
 			}
 		}
+		System.out.println("No se ha encontrado una planta con ese código.");
 		return null;
-	}
+}
 	public static void generarVentas(ArrayList<plantasClass> plantasO) {
 		boolean bandera =false;
 		int contador=0;
 		System.out.println("Generando Venta... ");
+		ArrayList<plantasClass> plantasVenta = new ArrayList<>(); 
 		do {
 			if (contador==0) {
 				System.out.println("Introduce el Codigo de la planta: ");
@@ -177,10 +161,13 @@ public class Principal {
 				System.out.println("Cantidad de la planta que quieres vender: ");
 				int cantidadPlantaVenta = controlErroresInt();
 				
-				plantasClass plantaVenta = buscadorPlanta(plantasO,codigoPlantaVenta,cantidadPlantaVenta);
-				plantaVenta.stock = plantaVenta.stock - cantidadPlantaVenta;
-				if (plantaVenta.stock == 0) {
+				plantasClass plantaV = buscadorPlanta(plantasO,codigoPlantaVenta,cantidadPlantaVenta);
+				plantasVenta.add(plantaV);
+				mostrarCatalogo(plantas);
+				
+				if (plantaV.stock == 0) {
 					//guardarPlanta();
+					
 				}
 				contador++;
 			}else {
@@ -200,10 +187,37 @@ public class Principal {
 				}while(!resCorrecta);
 			}
 		}while(!bandera);
-		
+		/*System.out.println("¿ Quieres añadir algo a la cesta de la compra ?, si(1) o no(2) ");
+		int venta = controlErroresInt();
+		if (venta==1) {
+			generarVentas(plantasO);
+		}*/ 
+		System.out.println("Generando Ticket... ");
+		//generarTicket(plantasVenta);
 	}
 	
-	
+	public static void generarTicket(ArrayList<plantasClass> plantasVenta){
+		ArrayList <Ticket> ListaTickets = new ArrayList <>();
+		
+		try (FileOutputStream FicheroEscritura = new FileOutputStream("ticket.dat");
+	             ObjectOutputStream escritura = new ObjectOutputStream(FicheroEscritura)) {
+
+	            	            
+	            Ticket Ticket = new Ticket(idIS,,"asb123","vendedor");
+	           
+	            
+	            ListaTickets.add(Ticket);
+
+	            
+	            escritura.writeObject(ListaTickets);
+	            
+
+	            System.out.println("Objetos escritos correctamente en empleado.dat");
+
+	        } catch (IOException i) {
+	            i.printStackTrace();
+	        }
+	}
 	
 	
 	
@@ -217,45 +231,98 @@ public class Principal {
 	
 	
 	public static void menuVendedores() {
+		boolean bandera = false;
 		System.out.println("Bienvenido al menú de Vendedores.");
-		System.out.println("");
-		int eleccion = controlErroresInt();
-		Catalogo();
-		switch (eleccion) {
-		case 1:
+		do {
+			System.out.println("1. Visualizar Catalogo\n"
+							+ "2. Generar Ventas\n"
+							+ "3. Buscador de Tickets\n"
+							+ "4. Salir.\n");
+			int eleccion = controlErroresInt();
+			Catalogo();
 			
-			mostrarCatalogo(plantas);
-			break;
-		case 2:
-			generarVentas(plantas);
-			break;
-		case 3:
-			//buscadorTickects;
-			break;
-		default:
-			System.out.println("Escribe bien, por favor.");	
-		}
+			switch (eleccion) {
+			case 1:
+				mostrarCatalogo(plantas);
+				break;
+			case 2:
+				generarVentas(plantas);
+				break;
+			case 3:
+				//buscadorTickects;
+				break;
+			case 4:
+				bandera = true;
+				break;
+			default:
+				System.out.println("Escribe bien, por favor.");	
+			}
+		}while(!bandera);
 	}
 	public static void menuGestores() {
-		System.out.println("Bienvenido al menú de Gestores."
-				+ "1. Mostrar Catalogo."
-				+ "2. Generar Venta."
-				+ "3.");
-		int eleccion = controlErroresInt();
-		Catalogo();
-		switch (eleccion) {
-		case 1:
-			//Dar
-			break;
-		case 2:
-			//GenerarVentas;
-			break;
-		case 3:
-			//buscadorTickects;
-			break;
-		default:
-			System.out.println("Escribe bien, por favor.");	
-		}
+		boolean bandera = false;
+		do {
+			System.out.println("Bienvenido al menú de Gestores.\n"
+					+ "1. Dar de altas plantas.\n"
+					+ "2. Dar de baja plantas.\n"
+					+ "3. Modificar campos de las plantas.\n"
+					+ "4. Dar de alta empleados.\n"
+					+ "5. Dar de baja empleados.\n"
+					+ "6. Recuperar empleados de baja.\n"
+					+ "7. Estadisticas de las compras.\n"
+					+ "8. Salir");
+			int eleccion = controlErroresInt();
+			Catalogo();
+			switch (eleccion) {
+				case 1:
+					//Dar
+					break;
+				case 2:
+					//GenerarVentas;
+					break;
+				case 3:
+					//buscadorTickects;
+					break;
+				case 4:
+					//buscadorTickects;
+					break;
+				case 5:
+					//buscadorTickects;
+					break;
+				case 6:
+					//buscadorTickects;
+					break;
+				case 7:
+					//buscadorTickects;
+					break;
+				case 8:
+					bandera = true;
+					break;
+				default:
+					System.out.println("Escribe bien, por favor.");	
+			}
+		}while(!bandera);	
+	}
+	
+	public static void main(String[] args) {
+		boolean bandera = true;
+		lecturaEmpleados();
+		System.out.println("Bienvenido al vivero Carías Ramos");
+		do{
+			int contrCorrecta = comprobacionContraseña(empleados);
+				switch (contrCorrecta) {
+				case 1:
+					menuGestores();
+					break;
+				case 2:
+					menuVendedores();
+					break;
+				default:
+					System.out.println("Escribe bien, por favor.");	
+				}
+			
+			
+		}while (!bandera);
 	}
 	
 }

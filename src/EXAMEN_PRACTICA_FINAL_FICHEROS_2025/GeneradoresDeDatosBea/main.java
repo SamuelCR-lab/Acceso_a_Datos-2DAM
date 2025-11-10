@@ -1,4 +1,4 @@
-package EXAMEN_PRACTICA_FINAL_FICHEROS_2025;
+package EXAMEN_PRACTICA_FINAL_FICHEROS_2025.GeneradoresDeDatosBea;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -9,6 +9,8 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+
+import EXAMEN_PRACTICA_FINAL_FICHEROS_2025.Empleado;
 
 public class main {
 	
