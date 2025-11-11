@@ -1,4 +1,7 @@
 package EXAMEN_PRACTICA_FINAL_FICHEROS_2025;
+
+
+
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,10 +26,12 @@ import org.w3c.dom.NodeList;
 public class Principal {
 	static Scanner entrada = new Scanner(System.in);
 	static ArrayList <plantasClass> plantas;
+	static ArrayList <plantasClass> plantasVenta;
 	static ArrayList <Empleado> empleados;
-	static int idIS;
+	static int idIS, iDTickets = 0;
 	static String nombreEmpleadoIS;
 	static Date fecha;
+	
 	public static int controlErroresInt() {
 		boolean error = true;
 		int dato =0;
@@ -139,6 +144,11 @@ public class Principal {
 		for(plantasClass ventasPlantas :plantasO) {
 			if (codigoPlantaVenta == ventasPlantas.codigo) {
 				if(cantidadPlantaVenta < ventasPlantas.stock) {
+					String nombreTemp = ventasPlantas.nombre;
+					String fotoTemp = ventasPlantas.foto;
+					String descripcion = ventasPlantas.descripcion;
+					Float precio =ventasPlantas.precio;
+					plantasVenta.add(new plantasClass(codigoPlantaVenta,nombreTemp,fotoTemp,descripcion,precio,cantidadPlantaVenta));
 					ventasPlantas.stock = ventasPlantas.stock - cantidadPlantaVenta;
 					return ventasPlantas;
 				}else {
@@ -148,12 +158,12 @@ public class Principal {
 		}
 		System.out.println("No se ha encontrado una planta con ese código.");
 		return null;
-}
+	}
 	public static void generarVentas(ArrayList<plantasClass> plantasO) {
 		boolean bandera =false;
 		int contador=0;
 		System.out.println("Generando Venta... ");
-		ArrayList<plantasClass> plantasVenta = new ArrayList<>(); 
+		//ArrayList<plantasClass> plantasVenta = new ArrayList<>(); 
 		do {
 			if (contador==0) {
 				System.out.println("Introduce el Codigo de la planta: ");
@@ -165,10 +175,6 @@ public class Principal {
 				plantasVenta.add(plantaV);
 				mostrarCatalogo(plantas);
 				
-				if (plantaV.stock == 0) {
-					//guardarPlanta();
-					
-				}
 				contador++;
 			}else {
 				boolean resCorrecta = false;
@@ -193,30 +199,41 @@ public class Principal {
 			generarVentas(plantasO);
 		}*/ 
 		System.out.println("Generando Ticket... ");
-		//generarTicket(plantasVenta);
+		generarTicket(plantasVenta);
 	}
 	
 	public static void generarTicket(ArrayList<plantasClass> plantasVenta){
-		ArrayList <Ticket> ListaTickets = new ArrayList <>();
-		
-		try (FileOutputStream FicheroEscritura = new FileOutputStream("ticket.dat");
-	             ObjectOutputStream escritura = new ObjectOutputStream(FicheroEscritura)) {
-
-	            	            
-	            Ticket Ticket = new Ticket(idIS,,"asb123","vendedor");
-	           
-	            
-	            ListaTickets.add(Ticket);
-
-	            
-	            escritura.writeObject(ListaTickets);
-	            
+	  	iDTickets++;
+	  	int codigoProd,cantidadProd;
+	  	float precio,total=0;
+	  	File ficheroTickets= new File("Tickets.txt");
+		try (RandomAccessFile escrituraTickets = new RandomAccessFile("tickets.txt", "w")) {
+			if (!ficheroTickets.exists()) {
+		  		ficheroTickets.createNewFile();
+		  	} 
+			escrituraTickets.writeChars("Nombre del Tickets : "+iDTickets);
+			escrituraTickets.writeChars("--------------------//--------------------");
+			escrituraTickets.writeChars("Id de empleado que ha atendido : "+idIS);
+			escrituraTickets.writeChars("Nombre del empleado que ha atendido : "+nombreEmpleadoIS);
+			escrituraTickets.writeChars("");
+			escrituraTickets.writeChars("Codigo del Producto\t Cantidad\t PrecioUnitario");
+			for (plantasClass plantasVendidas : plantasVenta) {
+				codigoProd= plantasVendidas.codigo;
+				cantidadProd = plantasVendidas.stock;
+				precio = plantasVendidas.precio;
+				escrituraTickets.writeChars(""+codigoProd+"\t "+cantidadProd+"\t "+precio);
+				total += cantidadProd*precio;	
+				
+			}	             
+			escrituraTickets.writeChars("--------------------//--------------------");
+			escrituraTickets.writeFloat(total);
 
 	            System.out.println("Objetos escritos correctamente en empleado.dat");
 
 	        } catch (IOException i) {
 	            i.printStackTrace();
 	        }
+	         
 	}
 	
 	
