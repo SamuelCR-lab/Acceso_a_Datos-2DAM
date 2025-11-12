@@ -1,4 +1,4 @@
-package EXAMEN_PRACTICA_FINAL_FICHEROS_2025.GeneradoresDeDatosBea;
+package EXAMEN_PRACTICA_FINAL_FICHEROS_2025;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,9 +10,7 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import EXAMEN_PRACTICA_FINAL_FICHEROS_2025.Empleado;
-
-public class main {
+public class creacionEmpleadosYPlantas {
 	
 	public static float numeroAleatorioPrecio() {
 		  
@@ -25,14 +23,12 @@ public class main {
 	}
 	public static void EscribirFichero () {
 	    
-	        try (RandomAccessFile raf = new RandomAccessFile("plantas.dat", "rw")) {
+	        try (RandomAccessFile raf = new RandomAccessFile("Plantas//plantas.dat", "rw")) {
 	            for(int i=1;i<21;i++) {
 	            	raf.writeInt(i);
 	            	float numero= numeroAleatorioPrecio();
-	            	System.out.println(numero);
 	      	        raf.writeFloat(numero);
 	      	        int numero1= numeroAleatorioStock();
-	            	System.out.println(numero1);
 	            	raf.writeInt(numero1);
 	            }
 	        } catch (IOException e) {
@@ -43,7 +39,7 @@ public class main {
 	public static void EscribirEmpleado(){
 		ArrayList <Empleado> ListaEmpleados = new ArrayList <>();
 		
-		try (FileOutputStream FicheroEscritura = new FileOutputStream("empleado.dat");
+		try (FileOutputStream FicheroEscritura = new FileOutputStream("Empleados//empleado.dat");
 	             ObjectOutputStream escritura = new ObjectOutputStream(FicheroEscritura)) {
 
 	            	            
@@ -56,9 +52,6 @@ public class main {
 	            ListaEmpleados.add(empleado3);
 	            
 	            escritura.writeObject(ListaEmpleados);
-	            
-
-	            System.out.println("Objetos escritos correctamente en empleado.dat");
 
 	        } catch (IOException i) {
 	            i.printStackTrace();
