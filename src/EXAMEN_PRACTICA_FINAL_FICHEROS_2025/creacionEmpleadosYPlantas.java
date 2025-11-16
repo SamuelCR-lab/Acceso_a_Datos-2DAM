@@ -59,7 +59,7 @@ public class creacionEmpleadosYPlantas {
 	}
 	public static void leerPlantaAccesoDirecto() {
 		int posicion=0;
-		try (RandomAccessFile raf = new RandomAccessFile("plantas.dat", "r")) {
+		try (RandomAccessFile raf = new RandomAccessFile("Plantas//plantas.dat", "r")) {
 			long size = raf.length();
 			while (posicion < size) {
 			  
@@ -92,7 +92,7 @@ public class creacionEmpleadosYPlantas {
 	public static ArrayList<Empleado> leerEmpleados() {
         ArrayList<Empleado> listaEmpleados = null;
 
-        try (FileInputStream ficherolectura = new FileInputStream("empleado.dat");
+        try (FileInputStream ficherolectura = new FileInputStream("Emple//empleado.dat");
              ObjectInputStream lectura = new ObjectInputStream(ficherolectura)) {
 
             // Leer el ArrayList de Empleado desde el archivo

@@ -69,7 +69,7 @@ public class plantasClass {
 
 	@Override
 	public String toString() {
-		return "Plantas codigo = "+ codigo +", nombre = " + nombre + ", foto = " + foto + ", descripcion = " + descripcion + ", stock = " + stock + ", precio = " + precio;
+		return "Planta de codigo = "+ codigo +", nombre = " + nombre + ", foto = " + foto + ", descripcion = " + descripcion + ", stock = " + stock + ", precio = " + precio;
 	}
 
 	
