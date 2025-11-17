@@ -3,13 +3,9 @@ package EXAMEN_PRACTICA_FINAL_FICHEROS_2025;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import mainArchivoCreadoGemini.PrincipalGemini;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
 import java.io.IOException;
 
 public class MenuGestores {
@@ -169,7 +165,7 @@ public class MenuGestores {
         }else {
         	empleadosDeBaja.forEach(System.out::println);
 	        System.out.print("Ingrese ID del empleado a recuperar: ");
-	        int idEmpleadoRecu = PrincipalGemini.controlErroresInt();
+	        int idEmpleadoRecu = Principal.controlErroresInt();
 	        
 	        Empleado empleadoRecuperados = null;
 	        int empleadoGuardados = empleadosDeBaja.size()+1;
@@ -242,8 +238,6 @@ public class MenuGestores {
                     default: 
                     	System.out.println("Escribe bien, intentalo de nuevo.");
                 }
-            
-            
         } while (!salir);
     }
 
