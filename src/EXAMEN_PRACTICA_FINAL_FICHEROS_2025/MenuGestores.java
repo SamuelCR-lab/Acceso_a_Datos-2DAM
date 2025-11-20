@@ -2,9 +2,6 @@ package EXAMEN_PRACTICA_FINAL_FICHEROS_2025;
 
 import java.util.ArrayList;
 import java.util.Scanner;
-
-import mainArchivoCreadoGemini.PrincipalGemini;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -169,7 +166,7 @@ public class MenuGestores {
         }else {
         	empleadosDeBaja.forEach(System.out::println);
 	        System.out.print("Ingrese ID del empleado a recuperar: ");
-	        int idEmpleadoRecu = PrincipalGemini.controlErroresInt();
+	        int idEmpleadoRecu = Principal.controlErroresInt();
 	        
 	        Empleado empleadoRecuperados = null;
 	        int empleadoGuardados = empleadosDeBaja.size()+1;
