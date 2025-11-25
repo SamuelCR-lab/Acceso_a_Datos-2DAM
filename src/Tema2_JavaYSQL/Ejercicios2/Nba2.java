@@ -1,30 +1,78 @@
-package Ejercicios;
+package Ejercicios2;
 
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Scanner;
 
-public class Nba {
+public class Nba2 {
 	static Scanner entrada = new Scanner(System.in);
+	static String url = "jdbc:mysql://localhost:3306/nba";
+	static String usuario = "root";
+	static String password = "cfgs";
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String url = "jdbc:mysql://localhost:3306/nba";
-		String usuario = "root";
-		String password = "cfgs";
-		/*NombreNBA(url,usuario,password);
-		Peso(url,usuario,password);
-		Equipos(url,usuario,password);*/
-		InsertarJugadores(url,usuario,password);
+		try {
+			Connection Conectado = conexion_BBDD();
+			boolean bandera = false;
+			while(!bandera) {
+				System.out.println("\n Menu de NBA"
+						+ "1. Imprimir Jugadores por letra."
+						+ "2. Peso medio de los jugadores."
+						+ "3. Mostrar jugadores por equipos."
+						+ "4. Insertar un jugador"
+						+ "5. Borrar Jugadores"
+						+ "6. Fichar jugador a equipo"
+						+ "7. Insertar un partido"
+						+ "8. Estadisticas de jugadores"
+						+ "9. Salir");
+				int opcion = entrada.nextInt();
+				switch (opcion) {
+				case 1:
+					NombreNBA(Conectado);
+					break;
+				case 2:
+					Peso(Conectado);
+					break;
+				case 3:
+					Equipos(Conectado);
+					break;
+				case 4:
+					
+					break;
+				case 5:
+					BorrarJugadores(Conectado);
+					break;
+				case 6:
+					BorrarJugadores(Conectado);
+					break;
+				case 7:
+					BorrarJugadores(Conectado);
+					break;
+				case 8:
+					BorrarJugadores(Conectado);
+					break;
+				case 9:
+					System.out.println("Saliendo...");
+					bandera = true;
+					break;
+				default :
+					System.out.println("ERRO. Escribe ");
+				}
+			}
+		} catch (ClassNotFoundException|SQLException  e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	
 	}
-	public static void NombreNBA(String url,String usuario,String password) {
+	public static void NombreNBA(Connection ConectadoBBDD) {
 		try {
 			//1 Cargar el drive de la bd
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			//2 Crear un conexion
-			Connection conexion = DriverManager.getConnection(url,usuario,password);
+
 			
 			/*3 Crear un Statement
 			Statement sentencia = conexion.createStatement();
@@ -33,7 +81,7 @@ public class Nba {
 			
 			//3. Crear un PreparedStatement
 			String consulta = "Select * from jugadores where Nombre like ?";
-			PreparedStatement sentencia = conexion.prepareStatement(consulta);
+			PreparedStatement sentencia = ConectadoBBDD.prepareStatement(consulta);
 			System.out.print("Introduce la inicial del nombre a buscar: ");
 			String parametro = entrada.nextLine();
 			sentencia.setString(1,parametro+"%");
@@ -56,12 +104,9 @@ public class Nba {
 			e.printStackTrace();
 		}
 	}
-	public static void Peso(String url,String usuario,String password) {
+	public static void Peso(Connection ConectadoBBDD) {
 		try {
 			//1 Cargar el drive de la bd
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			//2 Crear un conexion
-			Connection conexion = DriverManager.getConnection(url,usuario,password);
 			
 			/*3 Crear un Statement
 			Statement sentencia = conexion.createStatement();
@@ -70,17 +115,14 @@ public class Nba {
 			
 			//3. Crear un PreparedStatement
 			String consulta = "Select codigo from jugadores order by codigo desc limit 1";
-			PreparedStatement sentencia = conexion.prepareStatement(consulta);
-			String consulta2 = "Select avg(peso) from jugadores";
-			PreparedStatement sentencia2 = conexion.prepareStatement(consulta2);
+			PreparedStatement sentencia = ConectadoBBDD.prepareStatement(consulta);
+			
 			ResultSet resultado = sentencia.executeQuery();
-			ResultSet resultado1 = sentencia2.executeQuery();
+			
 			//Mostrar los resultados
-			while(resultado1.next()&&resultado.next()) {
-				int PesoAverage = resultado.getInt("avg(peso)");
-				System.out.println("\nEl peso medio de los jugadores: "+PesoAverage);
+			while (resultado.next()){
 				int idJugador = resultado.getInt("codigo");
-				System.out.println("\nEl jugador con el peso medio, es el jugador del ID: "+idJugador);
+				System.out.println("\nEl jugador de peso medio: "+idJugador);
 				
 			}
 					
@@ -88,13 +130,9 @@ public class Nba {
 			e.printStackTrace();
 		}
 	}
-	public static void Equipos(String url,String usuario,String password) {
+	public static void Equipos(Connection ConectadoBBDD) {
 		try {
 			//1 Cargar el drive de la bd
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			//2 Crear un conexion
-			Connection conexion = DriverManager.getConnection(url,usuario,password);
-			
 			/*3 Crear un Statement
 			Statement sentencia = conexion.createStatement();
 			String Consulta = "select * from usuario where idUsuario=1 or 1=1";//Este formato de sql permite las inyecciones de SQL
@@ -102,7 +140,7 @@ public class Nba {
 			System.out.println("\nTodos los equipos de la NBA");
 			//3. Crear un PreparedStatement
 			String consulta = "Select * from equipos";
-			PreparedStatement sentencia = conexion.prepareStatement(consulta);
+			PreparedStatement sentencia = ConectadoBBDD.prepareStatement(consulta);
 			ResultSet resultado = sentencia.executeQuery();
 			System.out.println("");
 			//Mostrar los resultados
@@ -114,18 +152,16 @@ public class Nba {
 				System.out.println("Nombre del equipo: "+nombre+", Ciudad: "+ciudad+", Conferencia: "+conferencia+", Division: "+division);
 				
 			}
-			MostrarJugadoresEquipo(url,usuario,password);
+			MostrarJugadoresEquipo(ConectadoBBDD);
 					
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
-	public static void MostrarJugadoresEquipo(String url,String usuario,String password) {
+	public static void MostrarJugadoresEquipo(Connection ConectadoBBDD) {
 		try {
 			//1 Cargar el drive de la bd
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			//2 Crear un conexion
-			Connection conexion = DriverManager.getConnection(url,usuario,password);
+
 			
 			/*3 Crear un Statement
 			Statement sentencia = conexion.createStatement();
@@ -134,7 +170,7 @@ public class Nba {
 			
 			//3. Crear un PreparedStatement
 			String consulta = "Select * from jugadores where Nombre_Equipo = ?";
-			PreparedStatement sentencia = conexion.prepareStatement(consulta);
+			PreparedStatement sentencia = ConectadoBBDD.prepareStatement(consulta);
 			System.out.print("\nIntroduce el nombre del equipo a buscar: ");
 			String parametro = entrada.nextLine();
 			sentencia.setString(1,parametro);
@@ -157,62 +193,60 @@ public class Nba {
 			e.printStackTrace();
 		}
 	}
-
-public static void InsertarJugadores(String url,String usuario,String password) {
-	try {
-		//1 Cargar el drive de la bd
-		Class.forName("com.mysql.cj.jdbc.Driver");
-		//2 Crear un conexion
-		Connection conexion = DriverManager.getConnection(url,usuario,password);
-		
-		/*3 Crear un Statement
-		Statement sentencia = conexion.createStatement();
-		String Consulta = "select * from usuario where idUsuario=1 or 1=1";//Este formato de sql permite las inyecciones de SQL
-		ResultSet resultado = sentencia.executeQuery(Consulta);*/
-		
-		//3. Crear un PreparedStatement
-		String consulta = "INSERT INTO jugadores VALUES (?,?,?,?,?,?,?);";
-		PreparedStatement sentencia = conexion.prepareStatement(consulta);
-		System.out.print("\nIntroduce el número del jugador a insertar: ");
-		int parametroCodigo = entrada.nextInt();
-		entrada.nextLine();
-		System.out.print("\nIntroduce el nombre del equipo a insertar: ");
-		String parametroEquipo = entrada.nextLine();
-		System.out.print("\nIntroduce el nombre del jugador a insertar: ");
-		String parametroNombre = entrada.nextLine();
-		System.out.print("\nIntroduce la procedencia del jugador a insertar: ");
-		String parametroProcedencia = entrada.nextLine();
-		System.out.print("\nIntroduce el altura del jugador a insertar: ");
-		String parametroAltura = entrada.nextLine();
-		System.out.print("\nIntroduce el peso del jugador a insertar: ");
-		int parametroPeso = entrada.nextInt();
-		System.out.print("\nIntroduce el posicion del jugador a insertar: ");
-		String parametroPosicion = entrada.nextLine();
-		entrada.next();
-		String consulta2 = "SELECT * FROM jugadores;";
-		PreparedStatement sentencia2 = conexion.prepareStatement(consulta2);
-		ResultSet resultado1 = sentencia2.executeQuery();
-		
-
-
-		sentencia.setInt(1,parametroCodigo);
-		sentencia.setString(2,parametroNombre);
-		sentencia.setString(3,parametroProcedencia);
-		sentencia.setString(4,parametroAltura);
-		sentencia.setInt(5,parametroPeso);
-		sentencia.setString(6,parametroPosicion);
-		sentencia.setString(7,parametroEquipo);
-
-		//Mostrar los resultados
-		int resultado = sentencia.executeUpdate();
-		if (resultado > 0) {	
-		System.out.println("Codigo jugador: "+parametroCodigo+", Nombre: " +parametroNombre+ ", Procedencia: "+parametroProcedencia+", Altura: "+parametroAltura+", Peso: "+parametroPeso+", Posicion: "+parametroPosicion+", Nombre del equipo: "+parametroEquipo);
-		}else {
-			System.out.println("Espabila");
-		}	
+	public static void BorrarJugadores(Connection ConectadoBBDD)  {
+		try {
+			int lineas = 0;
+			String consulta = "Select * from jugadores";
+			PreparedStatement sentencia = ConectadoBBDD.prepareStatement(consulta);
+			ResultSet resultado = sentencia.executeQuery();
+			while(resultado.next()) {
+				int idJugador = resultado.getInt("codigo");
+				String nombre = resultado.getString("Nombre");
+				String procedencia = resultado.getString("Procedencia");
+				String altura = resultado.getString("Altura");
+				int peso = resultado.getInt("Peso");
+				String posicion = resultado.getString("Posicion");
+				String equipo  = resultado.getString("Nombre_equipo");
+				System.out.println("Codigo jugador: "+idJugador+", Nombre: " +nombre+ ", Procedencia: "+procedencia+", Altura: "+altura+", Peso: "+peso+", Posicion: "+posicion+", Nombre del equipo: "+equipo);
 				
-	}catch(Exception e) {
-		e.printStackTrace();
+			}
+			System.out.print("\nIntroduce el id del jugador a borrar: ");
+			int parametro1 = entrada.nextInt();
+			String consulta2 = "Select * from estadisticas where jugador = ?";
+			PreparedStatement sentencia1 = ConectadoBBDD.prepareStatement(consulta2);
+			sentencia1.setInt(1,parametro1);
+			if(sentencia1.execute()) {
+				String consultaBorrado = "delete from estadisticas where jugador = ?";
+				PreparedStatement sentencia2 = ConectadoBBDD.prepareStatement(consultaBorrado);
+				sentencia2.setInt(1,parametro1);
+				lineas= sentencia2.executeUpdate();
+				sentencia2.close();
+			}
+			String consulta3 = "delete from jugadores where codigo = ?";
+			PreparedStatement sentencia3 = ConectadoBBDD.prepareStatement(consulta3);
+			sentencia3.setInt(1,parametro1);
+			lineas=sentencia3.executeUpdate();
+			sentencia3.close();
+			if(lineas != 1) {
+				System.out.println("El jugador no ha sido eliminado ");
+			}
+			System.out.println("El jugador ha sido eliminado ");
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//2 Crear un conexion
+		
+		
 	}
+public static Connection conexion_BBDD() throws SQLException, ClassNotFoundException{
+	Class.forName("com.mysql.cj.jdbc.Driver");
+	Connection conexion = DriverManager.getConnection(url,usuario,password);
+	System.out.println("Se ha realizado la conexion");
+	return conexion;
+	}
+public static void InsertarPartido(String url,String usuario,String password) {
+	
 }
 }

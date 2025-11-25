@@ -2,11 +2,14 @@ package EXAMEN_PRACTICA_FINAL_FICHEROS_2025;
 
 import java.util.ArrayList;
 import java.util.Scanner;
+<<<<<<< HEAD
 import java.io.File;
+=======
+
+
+>>>>>>> branch 'main' of https://github.com:443/SamuelCR-lab/Acceso_a_Datos-2DAM.git
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
 import java.io.IOException;
 
 public class MenuGestores {
@@ -239,8 +242,6 @@ public class MenuGestores {
                     default: 
                     	System.out.println("Escribe bien, intentalo de nuevo.");
                 }
-            
-            
         } while (!salir);
     }
 
