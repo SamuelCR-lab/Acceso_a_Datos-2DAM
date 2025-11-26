@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class CreacionDeObjetosPropios {
-	static String url = "jdbc:mysql://localhost:3306/nba";
+	static String url = "jdbc:mysql://localhost:3306/jugueteria";
 	static String usuario = "root";
 	static String password = "casaSQL";
 	
