@@ -80,12 +80,17 @@ public class FuncionesConsultas {
 			PreparedStatement sentenciaSTAND = conexion.prepareStatement(insercionStand);
 			PreparedStatement sentenciaSTOCK = conexion.prepareStatement(insercionStock);
 			
-			sentenciaEMP.executeUpdate(insercionEmpleados);
-			sentenciaZONA.executeUpdate(insercionZona);
-			sentenciaJUGUETES.executeUpdate(insercionJuguetes);
-			sentenciaSTAND.executeUpdate(insercionStand);
-			sentenciaSTOCK.executeUpdate(insercionStock);
+			int resultadoEmpleado = sentenciaEMP.executeUpdate(insercionEmpleados);
+			int resultadoZona = sentenciaZONA.executeUpdate(insercionZona);
+			int resultadoJuguete = sentenciaJUGUETES.executeUpdate(insercionJuguetes);
+			int resultadoStand = sentenciaSTAND.executeUpdate(insercionStand);
+			int resultadoStock = sentenciaSTOCK.executeUpdate(insercionStock);
 			
+			if((resultadoEmpleado > 0)&&(resultadoZona > 0)&&(resultadoJuguete > 0)&&(resultadoStand > 0)&&(resultadoStock > 0)) {
+				System.out.println("Se han subido los datos.");
+			}
+			
+			conexion.commit();
 		}catch (SQLException e) {
 			e.getStackTrace();
 		}

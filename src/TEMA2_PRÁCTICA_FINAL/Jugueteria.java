@@ -3,8 +3,6 @@ package TEMA2_PRÁCTICA_FINAL;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import EXAMEN_PRACTICA_FINAL_FICHEROS_2025.Empleado;
-
 public class Jugueteria {
 	
 	
