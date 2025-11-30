@@ -5,17 +5,18 @@ import java.sql.Date;
 enum tipoPago{Efectivo, Tarjeta, Etc}
 
 public class Venta {
-	int idVenta, idEmpleado, idJuguete, idStand;
+	int idVenta, idEmpleado, idJuguete, idStand,idZona;
 	Date fechaVenta;
 	double Monto;
 	tipoPago tipoDePago;
-	public Venta(int idVenta, int idEmpleado, int idJuguete, int idStand, Date fechaVenta, double monto,
+	public Venta(int idVenta, int idEmpleado, int idJuguete, int idStand,int idZona, Date fechaVenta, double monto,
 			tipoPago tipoDePago) {
 		super();
 		this.idVenta = idVenta;
 		this.idEmpleado = idEmpleado;
 		this.idJuguete = idJuguete;
 		this.idStand = idStand;
+		this.idZona = idZona;
 		this.fechaVenta = fechaVenta;
 		Monto = monto;
 		this.tipoDePago = tipoDePago;
@@ -62,6 +63,57 @@ public class Venta {
 	public void setTipoDePago(tipoPago tipoDePago) {
 		this.tipoDePago = tipoDePago;
 	}
+	public int getIdZona() {
+		return idZona;
+	}
+	public void setIdZona(int idZona) {
+		this.idZona = idZona;
+	}
+	
+	public static void realizarVenta() {
+		int idVenta = Funciones_y_Consultas.comprobacionVentas(), empleado = Funciones_y_Consultas.idEmpleadoVenta,juguete,stand,zona;
+		Date fechaVenta = new Date(System.currentTimeMillis());
+		double totalVenta;
+		boolean bandera = false;
+		System.out.print("Escribe el ID del juguete a vender: ");
+		juguete = Jugueteria.controlDeErroresInt();
+		totalVenta = Funciones_y_Consultas.precioVenta(juguete);
+		stand = Funciones_y_Consultas.buscarEnStock(juguete,"STAND_idStand");
+		zona = Funciones_y_Consultas.buscarEnStock(juguete,"STAND_ZONA_idzona");
+		do {
+			System.out.print("¿Que forma de pago elige ? Efectivo (1), Tarjeta(2), Etc(3): ");
+			int opcion = Jugueteria.controlDeErroresInt();
+			switch (opcion) {
+				case 1:
+					Venta VentaNE = new Venta(idVenta,empleado,juguete,stand,zona,fechaVenta,totalVenta,tipoPago.Efectivo);
+					Funciones_y_Consultas.registroVenta(VentaNE);
+					bandera=true;
+					break;
+				case 2:
+					Venta VentaNT = new Venta(idVenta,empleado,juguete,stand,zona,fechaVenta,totalVenta,tipoPago.Tarjeta);
+					Funciones_y_Consultas.registroVenta(VentaNT);
+					bandera=true;
+					break;
+				case 3:
+					Venta VentaNETC = new Venta(idVenta,empleado,juguete,stand,zona,fechaVenta,totalVenta,tipoPago.Etc);
+					Funciones_y_Consultas.registroVenta(VentaNETC);
+					bandera=true;
+					break;
+				default:
+					System.err.println("ERROR, introduce un número entre 1, 2 y 3.");
+			}
+		}while(!bandera);
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	@Override
 	public String toString() {
 		return "ID de venta = "+idVenta+", ID empleado = "+idEmpleado+", ID juguete = "+idJuguete+", ID stand = "
