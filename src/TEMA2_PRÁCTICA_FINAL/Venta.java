@@ -2,7 +2,7 @@ package TEMA2_PRÁCTICA_FINAL;
 
 import java.sql.Date;
 
-enum tipoPago{Efectivo, Tarjeta, Etc}
+enum tipoPago{Efectivo, Tarjeta, paypal}
 
 public class Venta {
 	int idVenta, idEmpleado, idJuguete, idStand,idZona;
@@ -71,31 +71,32 @@ public class Venta {
 	}
 	
 	public static void realizarVenta() {
-		int idVenta = Funciones_y_Consultas.comprobacionVentas(), empleado = Funciones_y_Consultas.idEmpleadoVenta,juguete,stand,zona;
+		int idVenta = Funciones_y_Consultas.contadorDeDatos("venta")+1, empleado = Funciones_y_Consultas.idEmpleadoVenta,idJuguete,stand,zona;
 		Date fechaVenta = new Date(System.currentTimeMillis());
 		double totalVenta;
 		boolean bandera = false;
 		System.out.print("Escribe el ID del juguete a vender: ");
-		juguete = Jugueteria.controlDeErroresInt();
-		totalVenta = Funciones_y_Consultas.precioVenta(juguete);
-		stand = Funciones_y_Consultas.buscarEnStock(juguete,"STAND_idStand");
-		zona = Funciones_y_Consultas.buscarEnStock(juguete,"STAND_ZONA_idzona");
+		idJuguete = Jugueteria.controlDeErroresInt();
+		totalVenta = Funciones_y_Consultas.precioVenta(idJuguete);
+		stand = Funciones_y_Consultas.buscarEnStock(idJuguete,"STAND_idStand");
+		zona = Funciones_y_Consultas.buscarEnStock(idJuguete,"STAND_ZONA_idzona");
+
 		do {
-			System.out.print("¿Que forma de pago elige ? Efectivo (1), Tarjeta(2), Etc(3): ");
+			System.out.print("¿Que forma de pago elige ? Efectivo (1), Tarjeta(2), Paypal(3): ");
 			int opcion = Jugueteria.controlDeErroresInt();
 			switch (opcion) {
 				case 1:
-					Venta VentaNE = new Venta(idVenta,empleado,juguete,stand,zona,fechaVenta,totalVenta,tipoPago.Efectivo);
+					Venta VentaNE = new Venta(idVenta,empleado,idJuguete,stand,zona,fechaVenta,totalVenta,tipoPago.Efectivo);
 					Funciones_y_Consultas.registroVenta(VentaNE);
 					bandera=true;
 					break;
 				case 2:
-					Venta VentaNT = new Venta(idVenta,empleado,juguete,stand,zona,fechaVenta,totalVenta,tipoPago.Tarjeta);
+					Venta VentaNT = new Venta(idVenta,empleado,idJuguete,stand,zona,fechaVenta,totalVenta,tipoPago.Tarjeta);
 					Funciones_y_Consultas.registroVenta(VentaNT);
 					bandera=true;
 					break;
 				case 3:
-					Venta VentaNETC = new Venta(idVenta,empleado,juguete,stand,zona,fechaVenta,totalVenta,tipoPago.Etc);
+					Venta VentaNETC = new Venta(idVenta,empleado,idJuguete,stand,zona,fechaVenta,totalVenta,tipoPago.paypal);
 					Funciones_y_Consultas.registroVenta(VentaNETC);
 					bandera=true;
 					break;

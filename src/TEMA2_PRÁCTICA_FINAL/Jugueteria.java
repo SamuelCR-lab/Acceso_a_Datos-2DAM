@@ -25,6 +25,7 @@ public class Jugueteria {
 	            }
 			}else {
 				System.err.println("ERROR. Introduce un número");
+				entrada.next();
 			}
 		}while(datosCorrectos);	
 		return entero;
@@ -42,6 +43,7 @@ public class Jugueteria {
 	            }
 			}else {
 				System.err.println("ERROR. Introduce un número");
+				entrada.next();
 			}
 		}while(datosCorrectos);	
 		return Double;
@@ -50,19 +52,20 @@ public class Jugueteria {
 	
 	private static void menuCajero() {
 		boolean banderaSalida = false;
+		System.out.println("\n========= Bienvenido al menú "+Funciones_y_Consultas.nombreUsuario+" =========");
 		do {
-			System.out.println("\n========== Vienvenido al menú "+Funciones_y_Consultas.nombreUsuario+" ==========");
-			System.out.println("1. Registrar un nuevo juguete.\n"
-							+ "2. Modificar datos de juguetes.\n"
-							+ "3. Eliminar Juguetes.\n"
-							+ "4. Realizar una Venta.\n"
-							+ "5. Realizar una Devolucion.\n"
-							+ "6. Juguetes en un Stand.\n"
-							+ "7. Salir.");
+			System.out.println("\n\t1. Registrar un nuevo juguete.\n"
+							+ "\t2. Modificar datos de juguetes.\n"
+							+ "\t3. Eliminar Juguetes.\n"
+							+ "\t4. Realizar una Venta.\n"
+							+ "\t5. Realizar una Devolucion.\n"
+							+ "\t6. Juguetes en un Stand.\n"
+							+ "\t7. Salir.\n");
 			System.out.print("Elige una opcion: ");
 			int opcion = controlDeErroresInt();
 			switch (opcion) {
 				case 1:
+					Funciones_y_Consultas.mostrarJuguetes();
 					Juguete.nuevoJuguete();
 					break;
 				case 2:
@@ -84,10 +87,11 @@ public class Jugueteria {
 					Funciones_y_Consultas.eliminarObjetos("juguete", "idJuguete",idEliminar);
 					break;
 				case 4:
+					Funciones_y_Consultas.mostrarJuguetes();
 					Venta.realizarVenta();
 					break;
 				case 5:
-					
+					Cambio.Devolucion();
 					break;
 				case 6:
 					
@@ -104,17 +108,17 @@ public class Jugueteria {
 	
 	private static void menuJefe() {
 		boolean banderaSalida = false;
+		System.out.println("\n========= Bienvenido al menú "+Funciones_y_Consultas.nombreUsuario+" =========");
 		do {
-			System.out.println("\n========== Vienvenido al menú "+Funciones_y_Consultas.nombreUsuario+" ==========");
-			System.out.println("1. Crear un nuevo empleado.\n"
-							+ "2. Modificar datos de un empleado.\n"
-							+ "3. Eliminar empleado.\n"
-							+ "4. Los empleados que más venden.\n"
-							+ "5. Ver el Producto más vendido.\n"
-							+ "6. Ventas realizadas en un mes.\n"
-							+ "7. Ventas realizadas por un empleado en un mes.\n"
-							+ "8. Cambios de Objetos y motivos.\n"
-							+ "9. Salir.");
+			System.out.println("\n\t1. Crear un nuevo empleado.\n"
+							+ "\t2. Modificar datos de un empleado.\n"
+							+ "\t3. Eliminar empleado.\n"
+							+ "\t4. Los empleados que más venden.\n"
+							+ "\t5. Ver el Producto más vendido.\n"
+							+ "\t6. Ventas realizadas en un mes.\n"
+							+ "\t7. Ventas realizadas por un empleado en un mes.\n"
+							+ "\t8. Cambios de Objetos y motivos.\n"
+							+ "\t9. Salir.\n");
 			System.out.print("Elige una opcion: ");
 			int opcion = controlDeErroresInt();
 			switch (opcion) {

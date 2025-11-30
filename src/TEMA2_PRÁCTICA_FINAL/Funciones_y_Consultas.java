@@ -169,8 +169,10 @@ public class Funciones_y_Consultas {
 				System.out.println("Se ha eliminado correctamente.");
 				if (tabla.equals("juguete")) {
 					mostrarJuguetes();
-				}else {
+				}else if (tabla.equals("empleado")) {
 					mostrarEmpleados();
+				}else {
+					mostrarVentas();
 				}
 			}
 		}catch(SQLException e) {
@@ -201,20 +203,42 @@ public class Funciones_y_Consultas {
 			String consulta = "SELECT * FROM juguete;";
 			PreparedStatement sentencia = conexion.prepareStatement(consulta);
 			ResultSet resultado = sentencia.executeQuery(consulta);
+			System.out.println("");
 			while (resultado.next()){
 				int idJuguete = resultado.getInt("idJuguete");
 				String nombre = resultado.getString("Nombre");
 				String descripcion = resultado.getString("Descripcion");
 				double precio = resultado.getDouble("Precio");
-				int cantidad = resultado.getInt("Cantidad_stock");
 				String categoria = resultado.getString("Categoria");
-				System.out.println("Juguete de ID = "+idJuguete+", de nombre = "+nombre+", Descripcion = "+descripcion+", precio = "+precio+", Cantidad en stock = "+cantidad+", Categoria = "+categoria);
+				System.out.println("Juguete de ID = "+idJuguete+", de nombre = "+nombre+", Descripcion = "+descripcion+", precio = "+precio+", Categoria = "+categoria);
 			}
+			System.out.println("");
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+	public static void mostrarVentas() {
+		try {
+			Connection conexion = comprobarConexion();
+			String consulta = "SELECT * FROM venta;";
+			PreparedStatement sentencia = conexion.prepareStatement(consulta);
+			ResultSet resultado = sentencia.executeQuery(consulta);
+			System.out.println("");
+			while (resultado.next()){
+				int idventa = resultado.getInt("idventa");
+				String fecha = resultado.getString("Fecha");
+				double montoVenta = resultado.getDouble("Monto");
+				int idEmpleado = resultado.getInt("EMPLEADO_idEMPLEADO");
+				int idStand = resultado.getInt("stock_STAND_idStand");
+				int idZona= resultado.getInt("stock_STAND_ZONA_idzona");
+				int idJuguete = resultado.getInt("stock_JUGUETE_idJuguete");
+				System.out.println("\nID venta = "+idventa+"\t\t realizada a fecha de = "+fecha+".\n Realizo la venta el empleado de id = "+idEmpleado+".\n Id de juguete vendido = "+idJuguete+", del stand "+idStand+", de la zona "+idZona+".\n el monto total del ticket = "+montoVenta+".\n");
+			}
+			System.out.println("");
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
 	public static int comprobacionDeIDs(String idTabla,String columna) {
 		int idFinal=0;
 		try {
@@ -321,8 +345,8 @@ public class Funciones_y_Consultas {
 	}
 	
 
-	private static int contadorDeDatos(String nombreTabla) {
-		int datosCargados = 1;
+	public static int contadorDeDatos(String nombreTabla) {
+		int datosCargados = 0;
 		try {
 			Connection conexion = comprobarConexion();
 			String consultaComun = "SELECT COUNT(*) as Total FROM " + nombreTabla;
@@ -389,7 +413,7 @@ public class Funciones_y_Consultas {
 		int funciona=0;
 		try {
 			Connection conexion = comprobarConexion();
-			String insercionZona = "INSERT INTO `zona` (`idzona`, `Nombre`, `Descripcion`) VALUES (1, 'Infantil', 'Juguetes para 0-3 años'),(2, 'Construcción', 'Legos y bloques'),(3, 'Juegos de Mesa', 'Puzzles y cartas'),(4, 'Exterior', 'Deportes y aire libre');";
+			String insercionZona = "INSERT INTO `zona` (`idzona`, `Nombre`, `Descripcion`) VALUES (1, 'Infantil', 'Juguetes para 0-3 años'),(2, 'Construcción', 'Legos y bloques'),(3, 'Juegos de Mesa', 'Puzzles y cartas'),(4, 'Juegos al Exterior', 'Deportes y aire libre');";
 			PreparedStatement sentenciaZONA = conexion.prepareStatement(insercionZona);
 			int comprobacionZona = sentenciaZONA.executeUpdate(insercionZona);
 			if ((comprobacionZona > 0)) {
@@ -461,7 +485,7 @@ public class Funciones_y_Consultas {
 		int funciona=0;
 		try {
 			Connection conexion = comprobarConexion();
-			String insercionStock = "INSERT INTO `stock` (`STAND_idStand`, `STAND_ZONA_idzona`, `JUGUETE_idJuguete`, `CANTIDAD`) VALUES (1, 1, 1, 100),(1, 1, 2, 50),(1, 4, 3, 30),(1, 3, 4, 40),(4,4,5,20),(1,2,6,40);";
+			String insercionStock = "INSERT INTO `stock` (`STAND_idStand`, `STAND_ZONA_idzona`, `JUGUETE_idJuguete`, `CANTIDAD`) VALUES (1, 1, 1, 100),(1, 1, 2, 50),(1, 4, 3, 30),(1, 3, 4, 40),(1,4,5,20),(1,2,6,40);";
 			PreparedStatement sentenciaSTOCK = conexion.prepareStatement(insercionStock);
 			int comprobacionStock =sentenciaSTOCK.executeUpdate(insercionStock);
 			if ((comprobacionStock > 0)) {
@@ -485,26 +509,11 @@ public class Funciones_y_Consultas {
 				System.out.println("No se han podido cargar todos los datos.");
 			}
 	}
-	public static int comprobacionVentas() {
-		int idVenta=0;
-		try  {
-			int datosVenta = contadorDeDatos("venta");
-			if (datosVenta == 0) {
-				return idVenta;
-			}else {
-				idVenta=datosVenta;
-				return idVenta;
-			}
-		}catch(Exception e) {
-			e.getStackTrace();
-		}
-		return idVenta;
-	}
 	
 	public static void registroVenta(Venta ventaNueva) {
 		try {
 			Connection conexion = comprobarConexion();
-			String consultaCreacionVenta = "INSERT INTO `venta` (`idventa`,`Fecha`,`Monto`,`tipoPago`,`EMPLEADO_idEMPLEADO`,`stock_STAND_idStand`,`stock_STAND_ZONA_idzona`, `stock_JUGUETE_idJuguete`) VALUES (?,?,?,?,?,?,?,?)";
+			String consultaCreacionVenta = "INSERT INTO `venta` (`idventa`,`Fecha`,`Monto`,`tipo_Pago`,`EMPLEADO_idEMPLEADO`,`stock_STAND_idStand`,`stock_STAND_ZONA_idzona`, `stock_JUGUETE_idJuguete`) VALUES (?,?,?,?,?,?,?,?)";
 			PreparedStatement sentenciaVenta = conexion.prepareStatement(consultaCreacionVenta);
 			sentenciaVenta.setInt(1,ventaNueva.idVenta);
 			sentenciaVenta.setDate(2,ventaNueva.fechaVenta);
@@ -514,10 +523,12 @@ public class Funciones_y_Consultas {
 			sentenciaVenta.setInt(6,ventaNueva.idStand);
 			sentenciaVenta.setInt(7, ventaNueva.idZona);
 			sentenciaVenta.setInt(8,ventaNueva.idJuguete);
-			sentenciaVenta.executeUpdate();
-			
+			int ventaRealizada = sentenciaVenta.executeUpdate();
+			if (ventaRealizada >0) {
+				System.out.println("Se ha realizado la venta correctamente");
+			}
 		}catch(SQLException o) {
-			o.getStackTrace();
+			o.printStackTrace();
 		}
 	}
 	private static void mostrarStock(int idJugueteEnStock) {
@@ -546,16 +557,16 @@ public class Funciones_y_Consultas {
 			if(resultado3.next()) {
 				nombreStand = resultado3.getString("NombreStand");
 			}
-			String consultaEnZona = "SELECT Nombre as NombreZona FROM stock WHERE idzona = " + idZona+";";
+			String consultaEnZona = "SELECT Nombre as NombreZona FROM zona WHERE idzona = " + idZona+";";
 			PreparedStatement sentenciaZona = conexion.prepareStatement(consultaEnZona);
 			ResultSet resultado4 = sentenciaZona.executeQuery();
 			if(resultado4.next()) {
 				nombreZona = resultado4.getString("NombreZona");
 			}
-			System.out.println("El juguete de ID = "+idJugueteEnStock+", nombre = "+nombreJuguete+", de precio = "+precioJugueteEnStock+", se encuentra en el Stand "+nombreStand+" y en la zona "+nombreZona+", tiene esta cantidad en stock = "+CantidadEnStock);
+			System.out.println("El juguete de ID = "+idJugueteEnStock+", nombre = "+nombreJuguete+", de precio = "+precioJugueteEnStock+"€, se encuentra en el Stand "+nombreStand+" y en la zona de "+nombreZona+", hay disponibles en stock = "+CantidadEnStock);
 			
 		}catch(SQLException i){
-			i.getStackTrace();
+			i.printStackTrace();
 		}
 	}
 	public static double precioVenta(int idJugueteVender) {
@@ -566,8 +577,8 @@ public class Funciones_y_Consultas {
 			Connection conexion = comprobarConexion();
 			String consultaEnJuguete = "SELECT precio,Nombre FROM juguete WHERE idJuguete = " + idJugueteVender+";";
 			
-			PreparedStatement sentenciaVenta = conexion.prepareStatement(consultaEnJuguete);
-			ResultSet resultado = sentenciaVenta.executeQuery();
+			PreparedStatement sentenciaJuguete = conexion.prepareStatement(consultaEnJuguete);
+			ResultSet resultado = sentenciaJuguete.executeQuery();
 			
 			if(resultado.next()) {
 				precioUnidad = resultado.getDouble("precio");
@@ -579,8 +590,6 @@ public class Funciones_y_Consultas {
 			if(resultadoStock.next()) {
 				cantidadEnStock =resultadoStock.getInt("CANTIDAD");
 			}
-			
-			
 			boolean bandera = false;
 			do {
 				mostrarStock(idJugueteVender);
@@ -597,31 +606,150 @@ public class Funciones_y_Consultas {
 			String actualizarInventario ="UPDATE stock set CANTIDAD = "+cantidadEnStock+" WHERE JUGUETE_idJuguete = "+idJugueteVender+";";
 			PreparedStatement sentenciaActualizacion = conexion.prepareStatement(actualizarInventario);
 			sentenciaActualizacion.executeUpdate();
-			mostrarJuguetes();
+			
 			return totalVenta;
 		}catch (SQLException i){
 			i.getStackTrace();
 		}
-		
-		
-		
 		return totalVenta;
 	}
 	public static int buscarEnStock(int idJuguete,String Columna) {
 		int id =0;
 		try {
+			
 			Connection conexion = comprobarConexion();
-			String consultaEnSTOCK = "SELECT "+Columna+" FROM stock WHERE  JUGUETE_idJuguete = " + idJuguete+";";
-			PreparedStatement sentenciaStand = conexion.prepareStatement(consultaEnSTOCK);
-			ResultSet resultado = sentenciaStand.executeQuery();
+			String consultaEnSTOCK = "SELECT "+Columna+" as id FROM stock WHERE  JUGUETE_idJuguete = ? ;";
+			PreparedStatement sentenciaSTOCK = conexion.prepareStatement(consultaEnSTOCK);
+			sentenciaSTOCK.setInt(1, idJuguete);
+			ResultSet resultado = sentenciaSTOCK.executeQuery();
 			if(resultado.next()) {
-				id = resultado.getInt(Columna);
+				id = resultado.getInt("id");
 				return id;
 			}
 		}catch (SQLException i){
-			i.getStackTrace();
+			i.printStackTrace();
 		}
 		return id;
+	}
+	public static int realizarCambio(Cambio cambiarProducto,double montoTotalCompra) {
+		boolean banderaCambio = false;
+		int verificacion=0,valorIDVenta = 0,cantidadEnStockJCanjeado = 0,cantidadEnStockJDevuelto = 0,cantidadCanjeadoAllevar,cantidadJuguetesDevueltos;
+		double precioUnidadJugueteCanjeado = 0,precioUnidadJugueteDevuelto = 0,totalJugueteCanjeado;
+		String nombreJugueteCanjeado ="";
+		try {
+			Connection conexion = comprobarConexion();
+			String consultaComprobacion = "SELECT COUNT(*) as total FROM venta where Monto = ? and stock_JUGUETE_idJuguete=? ";
+			PreparedStatement sentenciaCOMPROBACION = conexion.prepareStatement(consultaComprobacion);
+			sentenciaCOMPROBACION.setDouble(1,montoTotalCompra);
+			sentenciaCOMPROBACION.setInt(2,cambiarProducto.STOCK_JUGUETE_idJuguete_Original);
+			ResultSet resultadoCOMPROBACION = sentenciaCOMPROBACION.executeQuery();
+			if(resultadoCOMPROBACION.next()) {
+				verificacion = resultadoCOMPROBACION.getInt("total");
+				if (verificacion != 0) {
+					String consultaEnVenta = "SELECT idventa,Fecha,tipo_pago,EMPLEADO_idEMPLEADO,stock_STAND_idStand,stock_STAND_ZONA_idzona,stock_JUGUETE_idJuguete FROM venta where Monto = ? and stock_JUGUETE_idJuguete=? ";
+					PreparedStatement sentenciaVenta = conexion.prepareStatement(consultaEnVenta);
+					sentenciaVenta.setDouble(1,montoTotalCompra);
+					sentenciaVenta.setInt(2,cambiarProducto.STOCK_JUGUETE_idJuguete_Original);
+					ResultSet resultado = sentenciaVenta.executeQuery();
+					if(resultado.next()) {
+							cambiarProducto.EMPLEADO_idEMPLEADO = resultado.getInt("EMPLEADO_idEMPLEADO");
+							cambiarProducto.STOCK_STAND_idStand_Original = resultado.getInt("stock_STAND_idStand");
+							cambiarProducto.STOCK_STAND_ZONA_idzona_Original = resultado.getInt("stock_STAND_ZONA_idzona");
+							valorIDVenta = resultado.getInt("idventa");
+
+					}
+					String consultaEnJugueteCanje = "SELECT precio,Nombre FROM juguete WHERE idJuguete = " + cambiarProducto.STOCK_JUGUETE_idJuguete_Nuevo+";";
+					PreparedStatement sentenciaJugueteCanje = conexion.prepareStatement(consultaEnJugueteCanje);
+					ResultSet resultado1 = sentenciaJugueteCanje.executeQuery();
+					if(resultado1.next()) {
+						precioUnidadJugueteCanjeado = resultado1.getDouble("precio");
+						nombreJugueteCanjeado = resultado1.getString("Nombre");
+					}
+					String consultaEnJuguete = "SELECT precio,Nombre FROM juguete WHERE idJuguete = " + cambiarProducto.STOCK_JUGUETE_idJuguete_Original+";";
+					PreparedStatement sentenciaJuguete = conexion.prepareStatement(consultaEnJuguete);
+					ResultSet resultado2 = sentenciaJuguete.executeQuery();
+					if(resultado2.next()) {
+						precioUnidadJugueteDevuelto = resultado2.getDouble("precio");
+					}
+					String consultaEnStockJCanjeado = "SELECT STAND_idStand,STAND_ZONA_idzona,CANTIDAD FROM stock WHERE JUGUETE_idJuguete = " +  cambiarProducto.STOCK_JUGUETE_idJuguete_Nuevo+";";
+					PreparedStatement sentenciaStockJCanjeado = conexion.prepareStatement(consultaEnStockJCanjeado);
+					ResultSet resultadoStockJCanjeado = sentenciaStockJCanjeado.executeQuery();
+					if(resultadoStockJCanjeado.next()) {
+						cantidadEnStockJCanjeado =resultadoStockJCanjeado.getInt("CANTIDAD");
+						cambiarProducto.STOCK_STAND_idStand_Nuevo = resultadoStockJCanjeado.getInt("STAND_idStand");
+						cambiarProducto.STOCK_STAND_ZONA_idzona_Nuevo = resultadoStockJCanjeado.getInt("STAND_ZONA_idzona");
+					}
+					String consultaEnStockJDevuelto = "SELECT CANTIDAD FROM stock WHERE JUGUETE_idJuguete = " +  cambiarProducto.STOCK_JUGUETE_idJuguete_Original+";";
+					PreparedStatement sentenciaStockJDevuelto = conexion.prepareStatement(consultaEnStockJDevuelto);
+					ResultSet resultadoStockJDevuelto = sentenciaStockJDevuelto.executeQuery();
+					if(resultadoStockJDevuelto.next()) {
+						cantidadEnStockJDevuelto =resultadoStockJDevuelto.getInt("CANTIDAD");
+					}
+					do {
+						mostrarStock(cambiarProducto.STOCK_JUGUETE_idJuguete_Nuevo);
+						System.out.println("¿ Cuant@s "+nombreJugueteCanjeado+" va a llevar el cliente ?");
+						cantidadCanjeadoAllevar = Jugueteria.controlDeErroresInt();
+						if (cantidadEnStockJCanjeado < cantidadCanjeadoAllevar) {
+							System.err.println("Quieres intercambiar más cantidad de las que hay en Stock... introduce una cantidad que tengamos.");
+						}else {
+							totalJugueteCanjeado = precioUnidadJugueteCanjeado*cantidadCanjeadoAllevar;
+							if (montoTotalCompra < totalJugueteCanjeado) {
+								System.err.println("Has excedido el precio de tu anterior vuelve a introducir una cantidad menor del nuevo producto o que valga lo mismo, no se realizan devoluciones de dinero.");
+							}else {
+								cantidadEnStockJCanjeado -= cantidadCanjeadoAllevar;
+								cantidadJuguetesDevueltos = (int) (montoTotalCompra/precioUnidadJugueteDevuelto);
+								cantidadEnStockJDevuelto += cantidadJuguetesDevueltos;
+								banderaCambio = true;
+							}
+						}
+					}while(!banderaCambio);
+					String actualizarInventarioJugueteCanjeado ="UPDATE stock set CANTIDAD = "+cantidadEnStockJCanjeado+" WHERE JUGUETE_idJuguete = "+cambiarProducto.STOCK_JUGUETE_idJuguete_Nuevo+";";
+					PreparedStatement sentenciaActJugueteCanjeado = conexion.prepareStatement(actualizarInventarioJugueteCanjeado);
+					sentenciaActJugueteCanjeado.executeUpdate();
+					String actualizarInventarioJugueteDevuelto ="UPDATE stock set CANTIDAD = "+cantidadEnStockJDevuelto+" WHERE JUGUETE_idJuguete = "+cambiarProducto.STOCK_JUGUETE_idJuguete_Original+";";
+					PreparedStatement sentenciaActuJugueteDevuelto = conexion.prepareStatement(actualizarInventarioJugueteDevuelto);
+					sentenciaActuJugueteDevuelto.executeUpdate();
+					
+					int funcionoRegistro = registrarCambio(cambiarProducto);
+					if (funcionoRegistro ==1){
+						eliminarObjetos("venta","idventa",valorIDVenta);
+					}
+				}else {
+					return verificacion;
+				}
+			}
+		}catch(SQLException o) {
+			o.getStackTrace();
+		}
+		return verificacion;
+	}
+	private static int registrarCambio(Cambio cambiarProducto) {
+		int comprobacion = 0;
+		try {
+			Connection conexion = comprobarConexion();
+			String consultaCreacionVenta = "INSERT INTO `cambio` (`idCAMBIO`,`MOTIVO`,`Fecha`,`STOCK_STAND_idStand_Original`,`STOCK_STAND_ZONA_idzona_Original`,`STOCK_JUGUETE_idJuguete_Original`,`STOCK_STAND_idStand_Nuevo`, `STOCK_STAND_ZONA_idzona_Nuevo`,`STOCK_JUGUETE_idJuguete_Nuevo`,`EMPLEADO_idEMPLEADO`) VALUES (?,?,?,?,?,?,?,?,?,?)";
+			PreparedStatement sentenciaVenta = conexion.prepareStatement(consultaCreacionVenta);
+			sentenciaVenta.setInt(1,cambiarProducto.idCambio);
+			sentenciaVenta.setString(2,cambiarProducto.Motivo);
+			sentenciaVenta.setDate(3,cambiarProducto.fecha);
+			sentenciaVenta.setInt(4,cambiarProducto.STOCK_STAND_idStand_Original);
+			sentenciaVenta.setInt(5,cambiarProducto.STOCK_STAND_ZONA_idzona_Original);
+			sentenciaVenta.setInt(6,cambiarProducto.STOCK_JUGUETE_idJuguete_Original);
+			sentenciaVenta.setInt(7, cambiarProducto.STOCK_STAND_idStand_Nuevo);
+			sentenciaVenta.setInt(8,cambiarProducto.STOCK_STAND_ZONA_idzona_Nuevo);
+			sentenciaVenta.setInt(9,cambiarProducto.STOCK_JUGUETE_idJuguete_Nuevo);
+			sentenciaVenta.setInt(10,cambiarProducto.EMPLEADO_idEMPLEADO);
+
+			int ventaRealizada = sentenciaVenta.executeUpdate();
+			if (ventaRealizada >0) {
+				System.out.println("Se ha realizado correctamente el cambio.");
+				comprobacion = 1;
+				return comprobacion;
+			}
+		}catch(SQLException o) {
+			o.printStackTrace();
+		}
+		return comprobacion;
 	}
 	public static int obtencionCargoInicioSesion() {
 		int cargo=0;
@@ -629,7 +757,7 @@ public class Funciones_y_Consultas {
 			Connection conexion = comprobarConexion();
 			String consulta = "SELECT Cargo, Nombre, idEMPLEADO from empleado where idEMPLEADO = ?;";
 			PreparedStatement sentencia = conexion.prepareStatement(consulta);
-			System.out.print("Introduce tu Id de empleado : ");
+			System.out.print("\nIntroduce tu Id de empleado : ");
 			int parametro = Jugueteria.controlDeErroresInt();
 			sentencia.setInt(1,parametro);
 			ResultSet resultado = sentencia.executeQuery();
