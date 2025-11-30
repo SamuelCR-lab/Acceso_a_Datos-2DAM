@@ -173,7 +173,7 @@ public class Jugueteria {
 	
 	
 	public static void main(String[] args) {
-		//Funciones_y_Consultas.crearModeloDeDatos();
+		Funciones_y_Consultas.crearModeloDeDatos();
 		Funciones_y_Consultas.ComprobacionBaseDatos();
 		System.out.println("\n======== Bienvenido a la Jugueteria S <3 S ========");
 		int empleado = Funciones_y_Consultas.obtencionCargoInicioSesion();

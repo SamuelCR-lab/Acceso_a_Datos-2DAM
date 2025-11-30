@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 
 public class Funciones_y_Consultas {
-	private static String url = "jdbc:mysql://localhost:3306/jugueteria";
+	private static String url = "jdbc:mysql://localhost:3306/jugueteriaSamuelCarias";
 	private static String usuario = "root";
 	private static String passwordCASA = "casaSQL";
 	//private static String passwordINSTI = "cfgs";
