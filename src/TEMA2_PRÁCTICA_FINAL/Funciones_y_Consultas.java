@@ -6,7 +6,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 
@@ -193,6 +192,65 @@ public class Funciones_y_Consultas {
 				System.out.println("Empleado de ID = "+idEmpleado+", Nombre = "+nombre+", Cargo = "+cargo+", fecha de ingreso = "+fecha_Ingreso);
 				
 			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public static void mostrarStand() {
+		try {
+			Connection conexion = comprobarConexion();
+			String consulta = "SELECT * FROM stand;";
+			PreparedStatement sentencia = conexion.prepareStatement(consulta);
+			ResultSet resultado = sentencia.executeQuery(consulta);
+			while (resultado.next()){
+				int idStand = resultado.getInt("idStand");
+				String nombre = resultado.getString("Nombre");
+				String descripcion = resultado.getString("Descripcion");
+				System.out.println("Stand de ID = "+idStand+", "+nombre+", descripcion: "+descripcion);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public static void mostrarJugueteStand() {
+		int idStand,idZona = 0,idJuguete = 0, cantidad = 0;
+		String nombreStand = null,nombreZona=null,nombreJuguete=null;
+		try {
+			Connection conexion = comprobarConexion();
+			String consulta = "SELECT * FROM stock where STAND_idStand = ?;";
+			PreparedStatement sentencia = conexion.prepareStatement(consulta);
+			System.out.println("Introduce el Id del Stand que quieras ver los juguetes ahi guardados: ");
+			idStand = Jugueteria.controlDeErroresInt();
+			ResultSet resultado = sentencia.executeQuery();
+			System.out.println("");
+			if (resultado.next()){
+				idZona = resultado.getInt("stock_STAND_ZONA_idzona");
+				idJuguete = resultado.getInt("stock_JUGUETE_idJuguete");
+				cantidad = resultado.getInt("CANTIDAD");
+			}
+			String consultaStand = "SELECT Nombre FROM stand where idStand = ?;";
+			PreparedStatement sentenciaStand = conexion.prepareStatement(consultaStand);
+			sentenciaStand.setInt(1,idStand);
+			ResultSet resultadoStand = sentencia.executeQuery();
+			if (resultadoStand.next()) {
+				nombreStand = resultadoStand.getString("Nombre");
+			}
+			String consultaZona = "SELECT Nombre FROM zona where idzona = ?;";
+			PreparedStatement sentenciaZona= conexion.prepareStatement(consultaZona);
+			sentenciaZona.setInt(1,idZona);
+			ResultSet resultadoZona = sentencia.executeQuery();
+			if (resultadoZona.next()) {
+				nombreZona = resultadoZona.getString("Nombre");
+			}
+			String consultaJuguete = "SELECT Nombre FROM zona where idJuguete = ?;";
+			PreparedStatement sentenciaJuguete= conexion.prepareStatement(consultaJuguete);
+			sentenciaJuguete.setInt(1,idJuguete);
+			ResultSet resultadoJuguete = sentencia.executeQuery();
+			if (resultadoJuguete.next()) {
+				nombreJuguete = resultadoZona.getString("Nombre");
+			}
+			System.out.println("Stand id "+idStand+", de nombre = "+nombreStand+", se encuentra en la zona de "+nombreZona+" y encontraras "+nombreJuguete+", disponibles = "+cantidad);
+			System.out.println("");
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
@@ -751,6 +809,176 @@ public class Funciones_y_Consultas {
 		}
 		return comprobacion;
 	}
+	public static void VentasPorMes() {
+	    double totalEmpleado = 0;
+	    int mes = 0,idEmpleado=0;
+	    boolean bandera = false;
+	    try {
+	        Connection conexion = comprobarConexion();
+	        String VentaPorMes = "SELECT idventa, Fecha, Monto, juguete.Nombre as Juguete FROM venta JOIN juguete ON stock_JUGUETE_idJuguete = juguete.idJuguete WHERE MONTH(Fecha) =  ?;";
+	        System.out.println("Ventas realizadas por todo el més");
+	        do {
+		        System.out.print("Introduce el MES (1-12): ");
+		        mes = Jugueteria.controlDeErroresInt();
+		        if (mes > 0 && mes <= 12) {
+		        	bandera=true;
+		        }else {
+		        	System.out.println("Escribe un número entre el 1 al 12.");
+		        }
+	        }while(!bandera);
+	        
+	        PreparedStatement sentenciaMes = conexion.prepareStatement(VentaPorMes);
+	        sentenciaMes.setInt(1, mes);
+	        ResultSet resultado = sentenciaMes.executeQuery();
+	        
+	        System.out.println("\nResultados para el empleado ID " + idEmpleado + ":");
+	        
+	        boolean hayDatos = false;
+	        while(resultado.next()) {
+	            hayDatos = true;
+	            int idVenta = resultado.getInt("idventa");
+	            Date fecha = resultado.getDate("Fecha");
+	            String idJuguete = resultado.getString("Juguete");
+	            double montoPorVenta = resultado.getDouble("Monto");
+	            System.out.println("Venta ID: " +idVenta+" a Fecha: "+fecha+",  juguete: "+idJuguete+", de monto: "+montoPorVenta+"€");
+	            totalEmpleado += resultado.getDouble("Monto");
+	        }
+	        if (!hayDatos) {
+	            System.out.println("Este empleado no realizó ventas en el periodo seleccionado.");
+	        } else {
+	            System.out.println("TOTAL GENERADO POR EMPLEADO: "+totalEmpleado+"€");
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+}
+	public static void VentasEmpleadoPorMes() {
+		    double totalEmpleado = 0;
+		    int mes = 0,idEmpleado=0;
+		    boolean bandera = false;
+		    try {
+		        Connection conexion = comprobarConexion();
+		        String VentaPorMes = "SELECT v.idventa, v.Fecha, v.Monto, j.Nombre as Juguete " +
+		                     "FROM venta v " +
+		                     "JOIN juguete j ON v.stock_JUGUETE_idJuguete = j.idJuguete " +
+		                     "WHERE v.EMPLEADO_idEMPLEADO = ? AND MONTH(v.Fecha) =  ?";
+		        System.out.println("--- VENTAS POR EMPLEADO Y MES ---");
+		        System.out.print("Introduce el ID del Empleado: ");
+		        idEmpleado = Jugueteria.controlDeErroresInt();
+		        do {
+			        System.out.print("Introduce el MES (1-12): ");
+			        mes = Jugueteria.controlDeErroresInt();
+			        if (mes > 0 && mes <= 12) {
+			        	bandera=true;
+			        }else {
+			        	System.out.println("Escribe un número entre el 1 al 12.");
+			        }
+		        }while(!bandera);
+		        
+		        PreparedStatement sentenciaMes = conexion.prepareStatement(VentaPorMes);
+		        sentenciaMes.setInt(1, idEmpleado);
+		        sentenciaMes.setInt(2, mes);
+		        ResultSet resultado = sentenciaMes.executeQuery();
+		        
+		        System.out.println("\nResultados para el empleado ID " + idEmpleado + ":");
+		        
+		        boolean hayDatos = false;
+		        while(resultado.next()) {
+		            hayDatos = true;
+		            int idVenta = resultado.getInt("idventa");
+		            Date fecha = resultado.getDate("Fecha");
+		            String idJuguete = resultado.getString("Juguete");
+		            double montoPorVenta = resultado.getDouble("Monto");
+		            System.out.println("Venta ID: " +idVenta+" a Fecha: "+fecha+",  juguete: "+idJuguete+", de monto: "+montoPorVenta+"€");
+		            totalEmpleado += resultado.getDouble("Monto");
+		        }
+		        if (!hayDatos) {
+		            System.out.println("Este empleado no realizó ventas en el periodo seleccionado.");
+		        } else {
+		            System.out.println("TOTAL GENERADO POR EMPLEADO: "+totalEmpleado+"€");
+		        }
+
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    }
+	}
+	public static void mostrarCambios() {
+		try {
+			Connection conexion = comprobarConexion();
+			String consulta = "SELECT * FROM cambio;";
+			PreparedStatement sentencia = conexion.prepareStatement(consulta);
+			ResultSet resultado = sentencia.executeQuery(consulta);
+			System.out.println("");
+			while (resultado.next()){
+				int idcambio = resultado.getInt("idCAMBIO");
+				String MOTIVO = resultado.getString("MOTIVO");
+				String Fecha = resultado.getString("Fecha");
+				int idEmpleado = resultado.getInt("EMPLEADO_idEMPLEADO");
+				int idStandOriginal = resultado.getInt("STOCK_STAND_idStand_Original");
+				int idStandNuevo = resultado.getInt("STOCK_STAND_idStand_Nuevo");
+				int idZonaOriginal = resultado.getInt("STOCK_STAND_ZONA_idzona_Original");
+				int idZonaNuevo = resultado.getInt("STOCK_STAND_ZONA_idzona_Nuevo");
+				int idJugueteOriginal = resultado.getInt("STOCK_JUGUETE_idJuguete_Original");
+				int idJugueteNuevo= resultado.getInt("STOCK_JUGUETE_idJuguete_Nuevo");
+				System.out.println("\nID cambio = "+idcambio+", tiene de motivo = "+MOTIVO+" a "+Fecha+".\n Se devolvio el juguete de ID = "+idJugueteOriginal+", al stand "+idStandOriginal+", de la zona "+idZonaOriginal+" y se llevo el juguete de ID "+idJugueteNuevo+", del stand"+idStandNuevo+", de la zona"+idZonaNuevo+" y realizo el cambio el empleado de ID = "+idEmpleado);
+			}
+			System.out.println("");
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public static void reporteEmpleadosTopVentas() {
+	    try {
+	        Connection conexion = comprobarConexion();
+	        String consultaEmpleadosVentas = "SELECT e.Nombre, COUNT(v.idventa) as TotalVentas, SUM(v.Monto) as TotalGenerado FROM venta v INNER JOIN empleado e ON v.EMPLEADO_idEMPLEADO = e.idEMPLEADO GROUP BY e.idEMPLEADO, e.Nombre ORDER BY TotalVentas DESC";
+	        PreparedStatement sentenciasEmpleadosVentas = conexion.prepareStatement(consultaEmpleadosVentas);
+	        ResultSet resultadoEmpVentas = sentenciasEmpleadosVentas.executeQuery();
+	        System.out.println("Empleado que mas ventas han hecho.");
+	        int posicion = 1;
+	        boolean hayDatos = false;
+	        while(resultadoEmpVentas.next()) {
+	            hayDatos = true;
+	            String nombre = resultadoEmpVentas.getString("Nombre");
+	            int cantidad = resultadoEmpVentas.getInt("TotalVentas");
+	            double dinero = resultadoEmpVentas.getDouble("TotalGenerado");
+	            
+	            System.out.println(posicion+"º posicion para "+nombre+", con "+cantidad+" ventas, y un total generado de = "+dinero);
+	            posicion++;
+	        }
+	        if (!hayDatos) {
+	            System.out.println("Aún no se han registrado ventas en el sistema.");
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
+	
+	public static void ProductoMasVendido() {
+	    try {
+	        Connection conexion = comprobarConexion();
+	        String productoMasVendido = "SELECT juguete.Nombre, juguete.Precio, COUNT(venta.idventa) as CantidadVentas , SUM(venta.Monto) Monto FROM venta inner JOIN juguete  ON venta.stock_JUGUETE_idJuguete = juguete.idJuguete GROUP BY juguete.idJuguete, juguete.Nombre , juguete.Precio ORDER BY CantidadVentas DESC LIMIT 3"; 
+	                     
+	        PreparedStatement sentencia = conexion.prepareStatement(productoMasVendido);
+	        ResultSet resultado = sentencia.executeQuery();
+	        
+	        System.out.println("\n===== Los 3 productos más Vendidos =====");
+	        int ranking = 1;
+	        while(resultado.next()) {
+	            String nombre = resultado.getString("Nombre");
+	            int cantidad = 0;
+	            double precio = resultado.getInt("Precio");
+	            double monto = resultado.getDouble("Monto");
+	            cantidad = (int) (monto/precio);
+	            System.out.println(ranking+"º "+nombre+" (Vendido " + cantidad + " veces)");
+	            ranking++;
+	        }
+	        
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	}
 	public static int obtencionCargoInicioSesion() {
 		int cargo=0;
 		try {
@@ -778,5 +1006,122 @@ public class Funciones_y_Consultas {
 		}
 
 		return cargo;
+	}
+	public static void crearModeloDeDatos() {
+	    // 1. URL ESPECIAL: Nos conectamos al servidor raíz, NO a la base de datos 'jugueteria'
+	    // Quitamos "/jugueteria" de la URL temporalmente para poder crearla si no existe.
+	    String urlServer = "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true";
+	    
+	    try (Connection conexion = DriverManager.getConnection(urlServer, usuario, passwordCASA);
+	         java.sql.Statement sentencia = conexion.createStatement()) {
+
+	        sentencia.execute("SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0");
+	        sentencia.execute("SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0");
+	        sentencia.executeUpdate("CREATE SCHEMA IF NOT EXISTS `jugueteriaSamuelCarias` DEFAULT CHARACTER SET utf8mb3");
+	        sentencia.execute("USE `jugueteriaSamuelCarias`");
+
+	        sentencia.executeUpdate("CREATE TABLE IF NOT EXISTS `zona` (" +
+	                "`idzona` INT NOT NULL, " +
+	                "`Nombre` VARCHAR(45) NULL DEFAULT NULL, " +
+	                "`Descripcion` VARCHAR(150) NULL DEFAULT NULL, " +
+	                "PRIMARY KEY (`idzona`)) " +
+	                "ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3");
+
+	        sentencia.executeUpdate("CREATE TABLE IF NOT EXISTS `empleado` (" +
+	                "`idEMPLEADO` INT UNSIGNED NOT NULL AUTO_INCREMENT, " +
+	                "`Nombre` VARCHAR(45) NULL DEFAULT NULL, " +
+	                "`Cargo` ENUM('jefe', 'cajero') NULL DEFAULT NULL, " +
+	                "`Fecha_ingreso` DATE NULL DEFAULT NULL, " +
+	                "PRIMARY KEY (`idEMPLEADO`)) " +
+	                "ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3");
+
+	        sentencia.executeUpdate("CREATE TABLE IF NOT EXISTS `juguete` (" +
+	                "`idJuguete` INT NOT NULL, " +
+	                "`Nombre` VARCHAR(45) NULL DEFAULT NULL, " +
+	                "`Descripcion` VARCHAR(150) NULL DEFAULT NULL, " +
+	                "`Precio` DOUBLE NULL DEFAULT NULL, " +
+	                "`Cantidad_stock` INT UNSIGNED NOT NULL, " +
+	                "`Categoria` ENUM('Pelota', 'Muñeca', 'Coche', 'Juego_De_Mesa', 'Plastilina', 'Peluche', 'Otro') NULL DEFAULT 'Otro', " +
+	                "PRIMARY KEY (`idJuguete`)) " +
+	                "ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3");
+
+	        sentencia.executeUpdate("CREATE TABLE IF NOT EXISTS `stand` (" +
+	                "`idStand` INT NOT NULL, " +
+	                "`Nombre` VARCHAR(45) NULL DEFAULT NULL, " +
+	                "`Descripcion` VARCHAR(150) NULL DEFAULT NULL, " +
+	                "`ZONA_idzona` INT NOT NULL, " +
+	                "PRIMARY KEY (`idStand`, `ZONA_idzona`), " +
+	                "INDEX `fk_STAND_ZONA_idx` (`ZONA_idzona` ASC) VISIBLE, " +
+	                "CONSTRAINT `fk_STAND_ZONA` " +
+	                "FOREIGN KEY (`ZONA_idzona`) " +
+	                "REFERENCES `zona` (`idzona`) " +
+	                "ON DELETE CASCADE) " +
+	                "ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3");
+
+	        sentencia.executeUpdate("CREATE TABLE IF NOT EXISTS `stock` (" +
+	                "`STAND_idStand` INT NOT NULL, " +
+	                "`STAND_ZONA_idzona` INT NOT NULL, " +
+	                "`JUGUETE_idJuguete` INT NOT NULL, " +
+	                "`CANTIDAD` INT NULL DEFAULT NULL, " +
+	                "PRIMARY KEY (`STAND_idStand`, `STAND_ZONA_idzona`, `JUGUETE_idJuguete`), " +
+	                "INDEX `fk_STAND_has_JUGUETE_JUGUETE1_idx` (`JUGUETE_idJuguete` ASC) VISIBLE, " +
+	                "INDEX `fk_STAND_has_JUGUETE_STAND1_idx` (`STAND_idStand` ASC, `STAND_ZONA_idzona` ASC) VISIBLE, " +
+	                "CONSTRAINT `fk_STAND_has_JUGUETE_JUGUETE1` " +
+	                "FOREIGN KEY (`JUGUETE_idJuguete`) " +
+	                "REFERENCES `juguete` (`idJuguete`) " +
+	                "ON DELETE CASCADE, " +
+	                "CONSTRAINT `fk_STAND_has_JUGUETE_STAND1` " +
+	                "FOREIGN KEY (`STAND_idStand` , `STAND_ZONA_idzona`) " +
+	                "REFERENCES `stand` (`idStand` , `ZONA_idzona`) " +
+	                "ON DELETE CASCADE) " +
+	                "ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3");
+
+	        sentencia.executeUpdate("CREATE TABLE IF NOT EXISTS `venta` (" +
+	                "`idventa` INT NOT NULL AUTO_INCREMENT, " +
+	                "`Fecha` DATE NULL DEFAULT NULL, " +
+	                "`Monto` DOUBLE NULL DEFAULT NULL, " +
+	                "`tipo_pago` ENUM('efectivo', 'tarjeta', 'paypal') NULL DEFAULT NULL, " +
+	                "`EMPLEADO_idEMPLEADO` INT UNSIGNED NOT NULL, " +
+	                "`stock_STAND_idStand` INT NOT NULL, " +
+	                "`stock_STAND_ZONA_idzona` INT NOT NULL, " +
+	                "`stock_JUGUETE_idJuguete` INT NOT NULL, " +
+	                "PRIMARY KEY (`idventa`), " +
+	                "INDEX `fk_VENTA_EMPLEADO1_idx` (`EMPLEADO_idEMPLEADO` ASC) VISIBLE, " +
+	                "INDEX `fk_venta_stock1_idx` (`stock_STAND_idStand` ASC, `stock_STAND_ZONA_idzona` ASC, `stock_JUGUETE_idJuguete` ASC) VISIBLE, " +
+	                "CONSTRAINT `fk_VENTA_EMPLEADO1` " +
+	                "FOREIGN KEY (`EMPLEADO_idEMPLEADO`) " +
+	                "REFERENCES `empleado` (`idEMPLEADO`), " +
+	                "CONSTRAINT `fk_venta_stock1` " +
+	                "FOREIGN KEY (`stock_STAND_idStand` , `stock_STAND_ZONA_idzona` , `stock_JUGUETE_idJuguete`) " +
+	                "REFERENCES `stock` (`STAND_idStand` , `STAND_ZONA_idzona` , `JUGUETE_idJuguete`) " +
+	                "ON DELETE NO ACTION ON UPDATE NO ACTION) " +
+	                "ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3");
+
+	        sentencia.executeUpdate("CREATE TABLE IF NOT EXISTS `cambio` (" +
+	                "`idCAMBIO` INT NOT NULL AUTO_INCREMENT, " +
+	                "`MOTIVO` VARCHAR(150) NULL DEFAULT NULL, " +
+	                "`Fecha` DATE NULL DEFAULT NULL, " +
+	                "`STOCK_STAND_idStand_Original` INT NOT NULL, " +
+	                "`STOCK_STAND_ZONA_idzona_Original` INT NOT NULL, " +
+	                "`STOCK_JUGUETE_idJuguete_Original` INT NOT NULL, " +
+	                "`STOCK_STAND_idStand_Nuevo` INT NOT NULL, " +
+	                "`STOCK_STAND_ZONA_idzona_Nuevo` INT NOT NULL, " +
+	                "`STOCK_JUGUETE_idJuguete_Nuevo` INT NOT NULL, " +
+	                "`EMPLEADO_idEMPLEADO` INT UNSIGNED NOT NULL, " +
+	                "PRIMARY KEY (`idCAMBIO`), " +
+	                "CONSTRAINT `fk_CAMBIO_EMPLEADO1` FOREIGN KEY (`EMPLEADO_idEMPLEADO`) REFERENCES `empleado` (`idEMPLEADO`), " +
+	                "CONSTRAINT `fk_CAMBIO_STOCK1` FOREIGN KEY (`STOCK_STAND_idStand_Original`, `STOCK_STAND_ZONA_idzona_Original`, `STOCK_JUGUETE_idJuguete_Original`) REFERENCES `stock` (`STAND_idStand`, `STAND_ZONA_idzona`, `JUGUETE_idJuguete`), " +
+	                "CONSTRAINT `fk_CAMBIO_STOCK2` FOREIGN KEY (`STOCK_STAND_idStand_Nuevo`, `STOCK_STAND_ZONA_idzona_Nuevo`, `STOCK_JUGUETE_idJuguete_Nuevo`) REFERENCES `stock` (`STAND_idStand`, `STAND_ZONA_idzona`, `JUGUETE_idJuguete`)) " +
+	                "ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3");
+	        
+	        sentencia.execute("SET FOREIGN_KEY_CHECKS = 1");
+	        sentencia.execute("SET UNIQUE_CHECKS = 1");
+
+	        System.out.println("Base de datos 'jugueteriaSamuelCarias' y tablas verificadas correctamente.");
+
+	    } catch (SQLException e) {
+	        System.err.println("Error crítico creando el modelo de datos:");
+	        e.printStackTrace();
+	    }
 	}
 }

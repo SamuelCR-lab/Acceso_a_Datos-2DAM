@@ -1,17 +1,10 @@
 package TEMA2_PRÁCTICA_FINAL;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 
 public class Jugueteria {
-	
-	
 	static Scanner entrada = new Scanner(System.in); 
-	static ArrayList<Empleado>empleadoNuevo = new ArrayList<Empleado>();
-	static ArrayList<Juguete>jugueteNuevo = new ArrayList<Juguete>();
-	
-	
 	public static int controlDeErroresInt() {
 		int entero=0;
 		boolean datosCorrectos=true;
@@ -94,14 +87,15 @@ public class Jugueteria {
 					Cambio.Devolucion();
 					break;
 				case 6:
-					
+					Funciones_y_Consultas.mostrarStand();
+					Funciones_y_Consultas.mostrarJugueteStand();
 					break;
 				case 7:
 					System.out.println("Saliendo...");
 					banderaSalida=true;
 					break;
 				default:
-						
+					System.err.println("Introduce un número del 1 al 7.");
 			}
 		}while(!banderaSalida);
 	}
@@ -144,14 +138,19 @@ public class Jugueteria {
 				Funciones_y_Consultas.eliminarObjetos("empleado", "idEMPLEADO",idEliminar);
 				break;
 			case 4:
+				Funciones_y_Consultas.reporteEmpleadosTopVentas();
 				break;
 			case 5:
+				Funciones_y_Consultas.ProductoMasVendido();
 				break;
 			case 6:
+				Funciones_y_Consultas.VentasPorMes();
 				break;
 			case 7:
+				Funciones_y_Consultas.VentasEmpleadoPorMes();
 				break;
 			case 8:
+				Funciones_y_Consultas.mostrarCambios();
 				break;
 			case 9:
 				System.out.println("Saliendo...");
@@ -174,6 +173,7 @@ public class Jugueteria {
 	
 	
 	public static void main(String[] args) {
+		//Funciones_y_Consultas.crearModeloDeDatos();
 		Funciones_y_Consultas.ComprobacionBaseDatos();
 		System.out.println("\n======== Bienvenido a la Jugueteria S <3 S ========");
 		int empleado = Funciones_y_Consultas.obtencionCargoInicioSesion();
