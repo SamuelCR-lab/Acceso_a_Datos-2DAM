@@ -1,14 +1,14 @@
 package TEMA2_PRÁCTICA_FINAL;
 
-enum categoria{ Pelota, Muñeca, Coche, Juego_De_Mesa, Plastilina, Peluche, Otro}
+enum categoriaObjetos{ Pelota, Muñeca, Construccion, Juego_De_Mesa, Plastilina, Peluche, Otro}
 public class Juguete {
 	int iD_Juguete,cantidad;
 	String nombre,descripcion;
 	double precio;
-	categoria categoriaENUM;
+	categoriaObjetos categoriaENUM;
 	
 	public Juguete(int iD_Juguete, int cantidad, String nombre, String descripcion, double precio,
-			categoria categoriaENUM) {
+			categoriaObjetos categoriaENUM) {
 		super();
 		this.iD_Juguete = iD_Juguete;
 		this.cantidad = cantidad;
@@ -48,10 +48,10 @@ public class Juguete {
 	public void setPrecio(double precio) {
 		this.precio = precio;
 	}
-	public categoria getCategoriaENUM() {
+	public categoriaObjetos getCategoriaENUM() {
 		return categoriaENUM;
 	}
-	public void setCategoriaENUM(categoria categoriaENUM) {
+	public void setCategoriaENUM(categoriaObjetos categoriaENUM) {
 		this.categoriaENUM = categoriaENUM;
 	}
 
@@ -60,66 +60,64 @@ public class Juguete {
 		System.out.print("Nombre del juguete: ");
 		String nombre = Jugueteria.entrada.next();
 		System.out.print("Descripcion del juguete: ");
-		String descripcion = Jugueteria.entrada.next();
+		String descripcion = Jugueteria.entrada.nextLine();
 		System.out.print("Precio del juguete : ");
 		double precio = Jugueteria.controlDeErroresInt();
 		System.out.print("Cantidad en stock del juguete: ");
 		int cantidad = Jugueteria.controlDeErroresInt();
 		boolean bandera=false; 
 		do {
-			System.out.print("¿Que tipo de juguete es ? Pelota (1), Muñeca(2), Coche(3), Juego_De_Mesa(4), Plastilina(5), Peluche(6), Otro(7): ");
+			System.out.print("¿Que tipo de juguete es ? Pelota (1), Muñeca(2), Construccion(3), Juego_De_Mesa(4), Plastilina(5), Peluche(6), Otro(7): ");
 			int opcion = Jugueteria.controlDeErroresInt();
 			
 			switch (opcion) {
 				case 1:
-					Juguete jugueteN = new Juguete(id,cantidad,nombre,descripcion,precio,categoria.Pelota);
-					Funciones_y_Consultas.registroJugueteNuevo(jugueteN);
+					Juguete jugueteN = new Juguete(id,cantidad,nombre,descripcion,precio,categoriaObjetos.Pelota);
+					Funciones_y_Consultas.arrayJuguetes.add(jugueteN);
+					Funciones_y_Consultas.registroJuguetes(jugueteN);
 					bandera=true;
 					break;
 				case 2:
-					Juguete jugueteNm = new Juguete(id,cantidad,nombre,descripcion,precio,categoria.Muñeca);
-					Funciones_y_Consultas.registroJugueteNuevo(jugueteNm);
+					Juguete jugueteNm = new Juguete(id,cantidad,nombre,descripcion,precio,categoriaObjetos.Muñeca);
+					Funciones_y_Consultas.arrayJuguetes.add(jugueteNm);
+					Funciones_y_Consultas.registroJuguetes(jugueteNm);
 					bandera=true;
 					break;
 				case 3:
-					Juguete jugueteNc = new Juguete(id,cantidad,nombre,descripcion,precio,categoria.Coche);
-					Funciones_y_Consultas.registroJugueteNuevo(jugueteNc);
+					Juguete jugueteNc = new Juguete(id,cantidad,nombre,descripcion,precio,categoriaObjetos.Construccion);
+					Funciones_y_Consultas.arrayJuguetes.add(jugueteNc);
+					Funciones_y_Consultas.registroJuguetes(jugueteNc);
 					bandera=true;
 					break;
 				case 4:
-					Juguete jugueteNjm = new Juguete(id,cantidad,nombre,descripcion,precio,categoria.Juego_De_Mesa);
-					Funciones_y_Consultas.registroJugueteNuevo(jugueteNjm);
+					Juguete jugueteNjm = new Juguete(id,cantidad,nombre,descripcion,precio,categoriaObjetos.Juego_De_Mesa);
+					Funciones_y_Consultas.arrayJuguetes.add(jugueteNjm);
+					Funciones_y_Consultas.registroJuguetes(jugueteNjm);
+					bandera=true;
 					break;
 				case 5:
-					Juguete jugueteNp = new Juguete(id,cantidad,nombre,descripcion,precio,categoria.Plastilina);
-					Funciones_y_Consultas.registroJugueteNuevo(jugueteNp);
+					Juguete jugueteNp = new Juguete(id,cantidad,nombre,descripcion,precio,categoriaObjetos.Plastilina);
+					Funciones_y_Consultas.arrayJuguetes.add(jugueteNp);
+					Funciones_y_Consultas.registroJuguetes(jugueteNp);
 					bandera=true;
 					break;
 				case 6:
-					Juguete jugueteNpe = new Juguete(id,cantidad,nombre,descripcion,precio,categoria.Peluche);
-					Funciones_y_Consultas.registroJugueteNuevo(jugueteNpe);
+					Juguete jugueteNpe = new Juguete(id,cantidad,nombre,descripcion,precio,categoriaObjetos.Peluche);
+					Funciones_y_Consultas.arrayJuguetes.add(jugueteNpe);
+					Funciones_y_Consultas.registroJuguetes(jugueteNpe);
 					bandera=true;
 					break;
 				case 7:
-					Juguete jugueteNo = new Juguete(id,cantidad,nombre,descripcion,precio,categoria.Otro);
-					Funciones_y_Consultas.registroJugueteNuevo(jugueteNo);
+					Juguete jugueteNo = new Juguete(id,cantidad,nombre,descripcion,precio,categoriaObjetos.Otro);
+					Funciones_y_Consultas.arrayJuguetes.add(jugueteNo);
+					Funciones_y_Consultas.registroJuguetes(jugueteNo);
 					bandera=true;
-					
 					break;
 				default:
 					System.err.println("ERROR, introduce un número del 1 al 7.");
 			}
 		}while(!bandera);
-		
-		
 	}
-	
-	
-	
-	
-	
-	
-	
 	
 	@Override
 	public String toString() {

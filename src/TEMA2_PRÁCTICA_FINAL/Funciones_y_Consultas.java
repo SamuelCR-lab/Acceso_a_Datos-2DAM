@@ -6,7 +6,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Scanner;
+
 
 
 public class Funciones_y_Consultas {
@@ -17,7 +19,9 @@ public class Funciones_y_Consultas {
 	private static Scanner entrada = new Scanner(System.in);
 	public static String nombreUsuario;
 	public static int idEmpleadoVenta;
-	
+	public static ArrayList<Juguete> arrayJuguetes = new ArrayList<>();
+	public static ArrayList<Juguete> arrayJuguetestemporal = new ArrayList<>();
+	private static ArrayList<Stock> arrayStocks = new ArrayList<>();
 	
 	public static Connection comprobarConexion() {
 		Connection conexion = null;
@@ -33,7 +37,10 @@ public class Funciones_y_Consultas {
 		return conexion;
 	
 	}
-	public static void registroJugueteNuevo(Juguete jugueteN) {
+	
+	
+	
+	public static void registroJuguetes(Juguete jugueteN) {
 		boolean bandera = false,banderaZona2=false;
 		int comprobacionEnStock;
 		String insercionJugueteEnStock;
@@ -60,7 +67,7 @@ public class Funciones_y_Consultas {
 						sentencia2.setInt(2,opcion);
 						sentencia2.setInt(3,jugueteN.iD_Juguete);
 						sentencia2.setInt(4,jugueteN.cantidad);
-						comprobacionEnStock =sentencia.executeUpdate();
+						comprobacionEnStock =sentencia2.executeUpdate();
 						if ((comprobacionEnStock > 0)) {
 							System.out.println("Se ha agregado el juguete de forma correcta.");
 							mostrarJuguetes();
@@ -79,7 +86,7 @@ public class Funciones_y_Consultas {
 										sentencia2.setInt(2,opcion);
 										sentencia2.setInt(3,jugueteN.iD_Juguete);
 										sentencia2.setInt(4,jugueteN.cantidad);
-										comprobacionEnStock =sentencia.executeUpdate();
+										comprobacionEnStock =sentencia2.executeUpdate();
 										if ((comprobacionEnStock > 0)) {
 											System.out.println("Se ha agregado el juguete de forma correcta.");
 											mostrarJuguetes();
@@ -91,7 +98,7 @@ public class Funciones_y_Consultas {
 										sentencia2.setInt(2,opcion);
 										sentencia2.setInt(3,jugueteN.iD_Juguete);
 										sentencia2.setInt(4,jugueteN.cantidad);
-										comprobacionEnStock =sentencia.executeUpdate();
+										comprobacionEnStock =sentencia2.executeUpdate();
 										if ((comprobacionEnStock > 0)) {
 											System.out.println("Se ha agregado el juguete de forma correcta.");
 											mostrarJuguetes();
@@ -111,7 +118,7 @@ public class Funciones_y_Consultas {
 						sentencia2.setInt(2,opcion);
 						sentencia2.setInt(3,jugueteN.iD_Juguete);
 						sentencia2.setInt(4,jugueteN.cantidad);
-						comprobacionEnStock =sentencia.executeUpdate();
+						comprobacionEnStock =sentencia2.executeUpdate();
 						if ((comprobacionEnStock > 0)) {
 							System.out.println("Se ha agregado el juguete de forma correcta.");
 							mostrarJuguetes();
@@ -125,7 +132,7 @@ public class Funciones_y_Consultas {
 						sentencia2.setInt(2,opcion);
 						sentencia2.setInt(3,jugueteN.iD_Juguete);
 						sentencia2.setInt(4,jugueteN.cantidad);
-						comprobacionEnStock =sentencia.executeUpdate();
+						comprobacionEnStock =sentencia2.executeUpdate();
 						if ((comprobacionEnStock > 0)) {
 							System.out.println("Se ha agregado el juguete de forma correcta.");
 							mostrarJuguetes();
@@ -141,6 +148,11 @@ public class Funciones_y_Consultas {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	
+	
+	
 	public static void registroEmpleadoNuevo(Empleado empleadoN) {
 		try {
 			Connection conexion = comprobarConexion();
@@ -165,15 +177,32 @@ public class Funciones_y_Consultas {
 			PreparedStatement sentencia = conexion.prepareStatement(consulta);
 			int comprobacionStock =sentencia.executeUpdate();
 			if ((comprobacionStock > 0)) {
-				System.out.println("Se ha eliminado correctamente.");
-				if (tabla.equals("juguete")) {
+					System.out.println("Se ha eliminado correctamente.");
+			}
+				if(tabla.equals("juguete")){
+					Juguete jugueteABorrar = null;
+					for(Juguete a : arrayJuguetes) {
+						if (a.iD_Juguete == idAEliminar) {
+							jugueteABorrar = a;
+							break;
+						}
+					}
+					if (jugueteABorrar != null) {
+	                    arrayJuguetes.remove(jugueteABorrar);
+	                }
+					Stock stockAJuguete =null;
+					for(Stock ab : arrayStocks) {
+						if (ab.idJuguete == idAEliminar) {
+							stockAJuguete=ab;
+						}
+					}
+					arrayStocks.remove(stockAJuguete);
 					mostrarJuguetes();
 				}else if (tabla.equals("empleado")) {
 					mostrarEmpleados();
 				}else {
 					mostrarVentas();
 				}
-			}
 		}catch(SQLException e) {
 			e.printStackTrace();
 		}
@@ -213,43 +242,56 @@ public class Funciones_y_Consultas {
 		}
 	}
 	public static void mostrarJugueteStand() {
+		boolean bandera = false;
 		int idStand,idZona = 0,idJuguete = 0, cantidad = 0;
 		String nombreStand = null,nombreZona=null,nombreJuguete=null;
 		try {
 			Connection conexion = comprobarConexion();
-			String consulta = "SELECT * FROM stock where STAND_idStand = ?;";
+			String consulta = "SELECT * FROM stock where STAND_ZONA_idzona = ?;";
 			PreparedStatement sentencia = conexion.prepareStatement(consulta);
-			System.out.println("Introduce el Id del Stand que quieras ver los juguetes ahi guardados: ");
-			idStand = Jugueteria.controlDeErroresInt();
-			ResultSet resultado = sentencia.executeQuery();
-			System.out.println("");
-			if (resultado.next()){
-				idZona = resultado.getInt("stock_STAND_ZONA_idzona");
-				idJuguete = resultado.getInt("stock_JUGUETE_idJuguete");
-				cantidad = resultado.getInt("CANTIDAD");
+			do {
+			System.out.println("Introduce el Id de la zona donde se encuentra el stand que quieras ver los juguetes ahi guardados: Infantil (1), Construccion (2), Juegos de Mesa (3), Juegos al Aire libre (4)");
+			idZona = Jugueteria.controlDeErroresInt();
+			
+			if ((idZona>0)&&(idZona<=4)) {
+				sentencia.setInt(1,idZona);
+				ResultSet resultado = sentencia.executeQuery();
+				System.out.println("");
+				while(resultado.next()){
+					idStand = resultado.getInt("STAND_idStand");
+					idJuguete = resultado.getInt("JUGUETE_idJuguete");
+					cantidad = resultado.getInt("CANTIDAD");
+					String consultaStand = "SELECT Nombre FROM stand where idStand = ? AND Zona_idzona = ?;";
+					PreparedStatement sentenciaStand = conexion.prepareStatement(consultaStand);
+					sentenciaStand.setInt(1,idStand);
+					sentenciaStand.setInt(2,idZona);
+					ResultSet resultadoStand = sentenciaStand.executeQuery();
+					if (resultadoStand.next()) {
+						nombreStand = resultadoStand.getString("Nombre");
+					}
+					String consultaZona = "SELECT Nombre FROM zona where idzona = ?;";
+					PreparedStatement sentenciaZona= conexion.prepareStatement(consultaZona);
+					sentenciaZona.setInt(1,idZona);
+					ResultSet resultadoZona = sentenciaZona.executeQuery();
+					if (resultadoZona.next()) {
+						nombreZona = resultadoZona.getString("Nombre");
+					}
+					String consultaJuguete = "SELECT Nombre,Cantidad_stock FROM juguete where idJuguete = ?;";
+					PreparedStatement sentenciaJuguete= conexion.prepareStatement(consultaJuguete);
+					sentenciaJuguete.setInt(1,idJuguete);
+					ResultSet resultadoJuguete = sentenciaJuguete.executeQuery();
+					if (resultadoJuguete.next()) {
+						nombreJuguete = resultadoJuguete.getString("Nombre");
+						cantidad = resultadoJuguete.getInt("Cantidad_stock");
+					}
+					System.out.println("Stand de id "+idStand+", de nombre = "+nombreStand+", se encuentra en la zona de "+nombreZona+" y encontraras "+nombreJuguete+", disponibles = "+cantidad);
+				}
+				bandera = true;
+			}else{
+				System.out.println("Introduce un valor entre el 1 y 4.");
 			}
-			String consultaStand = "SELECT Nombre FROM stand where idStand = ?;";
-			PreparedStatement sentenciaStand = conexion.prepareStatement(consultaStand);
-			sentenciaStand.setInt(1,idStand);
-			ResultSet resultadoStand = sentencia.executeQuery();
-			if (resultadoStand.next()) {
-				nombreStand = resultadoStand.getString("Nombre");
-			}
-			String consultaZona = "SELECT Nombre FROM zona where idzona = ?;";
-			PreparedStatement sentenciaZona= conexion.prepareStatement(consultaZona);
-			sentenciaZona.setInt(1,idZona);
-			ResultSet resultadoZona = sentencia.executeQuery();
-			if (resultadoZona.next()) {
-				nombreZona = resultadoZona.getString("Nombre");
-			}
-			String consultaJuguete = "SELECT Nombre FROM zona where idJuguete = ?;";
-			PreparedStatement sentenciaJuguete= conexion.prepareStatement(consultaJuguete);
-			sentenciaJuguete.setInt(1,idJuguete);
-			ResultSet resultadoJuguete = sentencia.executeQuery();
-			if (resultadoJuguete.next()) {
-				nombreJuguete = resultadoZona.getString("Nombre");
-			}
-			System.out.println("Stand id "+idStand+", de nombre = "+nombreStand+", se encuentra en la zona de "+nombreZona+" y encontraras "+nombreJuguete+", disponibles = "+cantidad);
+			}while(!bandera);
+			
 			System.out.println("");
 		}catch(SQLException e) {
 			e.printStackTrace();
@@ -263,12 +305,77 @@ public class Funciones_y_Consultas {
 			ResultSet resultado = sentencia.executeQuery(consulta);
 			System.out.println("");
 			while (resultado.next()){
+				int cantidad = 0;
 				int idJuguete = resultado.getInt("idJuguete");
 				String nombre = resultado.getString("Nombre");
 				String descripcion = resultado.getString("Descripcion");
 				double precio = resultado.getDouble("Precio");
 				String categoria = resultado.getString("Categoria");
 				System.out.println("Juguete de ID = "+idJuguete+", de nombre = "+nombre+", Descripcion = "+descripcion+", precio = "+precio+", Categoria = "+categoria);
+				if(categoria=="Pelota") {
+					String consultaEnStock = "SELECT CANTIDAD FROM stock WHERE JUGUETE_idJuguete = " + idJuguete+";";
+					PreparedStatement sentencia1 = conexion.prepareStatement(consultaEnStock);
+					ResultSet resultado1 = sentencia1.executeQuery(consultaEnStock);
+					if(resultado1.next()) {
+						cantidad = resultado1.getInt("CANTIDAD");
+					}
+					Juguete jGuardado = new Juguete(idJuguete,cantidad,nombre,descripcion,precio,categoriaObjetos.Pelota);
+					arrayJuguetes.add(jGuardado);
+				}else if(categoria=="Muñeca") {
+					String consultaEnStock = "SELECT CANTIDAD FROM stock WHERE JUGUETE_idJuguete = " + idJuguete+";";
+					PreparedStatement sentencia1 = conexion.prepareStatement(consultaEnStock);
+					ResultSet resultado1 = sentencia1.executeQuery(consultaEnStock);
+					if(resultado1.next()) {
+						cantidad = resultado1.getInt("CANTIDAD");
+					}
+					Juguete jGuardado = new Juguete(idJuguete,cantidad,nombre,descripcion,precio,categoriaObjetos.Muñeca);
+					arrayJuguetes.add(jGuardado);
+				}else if(categoria=="Construccion") {
+					String consultaEnStock = "SELECT CANTIDAD FROM stock WHERE JUGUETE_idJuguete = " + idJuguete+";";
+					PreparedStatement sentencia1 = conexion.prepareStatement(consultaEnStock);
+					ResultSet resultado1 = sentencia1.executeQuery(consultaEnStock);
+					if(resultado1.next()) {
+						cantidad = resultado1.getInt("CANTIDAD");
+					}
+					Juguete jGuardado = new Juguete(idJuguete,cantidad,nombre,descripcion,precio,categoriaObjetos.Construccion);
+					arrayJuguetes.add(jGuardado);
+				}else if(categoria=="Juego_De_Mesa") {
+					String consultaEnStock = "SELECT CANTIDAD FROM stock WHERE JUGUETE_idJuguete = " + idJuguete+";";
+					PreparedStatement sentencia1 = conexion.prepareStatement(consultaEnStock);
+					ResultSet resultado1 = sentencia1.executeQuery(consultaEnStock);
+					if(resultado1.next()) {
+						cantidad = resultado1.getInt("CANTIDAD");
+					}
+					Juguete jGuardado = new Juguete(idJuguete,cantidad,nombre,descripcion,precio,categoriaObjetos.Juego_De_Mesa);
+					arrayJuguetes.add(jGuardado);
+				}else if(categoria=="Plastilina") {
+					String consultaEnStock = "SELECT CANTIDAD FROM stock WHERE JUGUETE_idJuguete = " + idJuguete+";";
+					PreparedStatement sentencia1 = conexion.prepareStatement(consultaEnStock);
+					ResultSet resultado1 = sentencia1.executeQuery(consultaEnStock);
+					if(resultado1.next()) {
+						cantidad = resultado1.getInt("CANTIDAD");
+					}
+					Juguete jGuardado = new Juguete(idJuguete,cantidad,nombre,descripcion,precio,categoriaObjetos.Plastilina);
+					arrayJuguetes.add(jGuardado);
+				}else if(categoria=="Peluche") {
+					String consultaEnStock = "SELECT CANTIDAD FROM stock WHERE JUGUETE_idJuguete = " + idJuguete+";";
+					PreparedStatement sentencia1 = conexion.prepareStatement(consultaEnStock);
+					ResultSet resultado1 = sentencia1.executeQuery(consultaEnStock);
+					if(resultado1.next()) {
+						cantidad = resultado1.getInt("CANTIDAD");
+					}
+					Juguete jGuardado = new Juguete(idJuguete,cantidad,nombre,descripcion,precio,categoriaObjetos.Peluche);
+					arrayJuguetes.add(jGuardado);
+				}else {
+					String consultaEnStock = "SELECT CANTIDAD FROM stock WHERE JUGUETE_idJuguete = " + idJuguete+";";
+					PreparedStatement sentencia1 = conexion.prepareStatement(consultaEnStock);
+					ResultSet resultado1 = sentencia1.executeQuery(consultaEnStock);
+					if(resultado1.next()) {
+						cantidad = resultado1.getInt("CANTIDAD");
+					}
+					Juguete jGuardado = new Juguete(idJuguete,cantidad,nombre,descripcion,precio,categoriaObjetos.Otro);
+					arrayJuguetes.add(jGuardado);
+				}
 			}
 			System.out.println("");
 		}catch(SQLException e) {
@@ -505,12 +612,12 @@ public class Funciones_y_Consultas {
 		int funciona=0;
 		try {
 			Connection conexion = comprobarConexion();
-			if (!existeColumnaCategoria()) {
+			/*if (!existeColumnaCategoria()) {
 				String creacionCategoria = "Alter table juguete add column Categoria ENUM ('Pelota', 'Muñeca', 'Coche', 'Juego_De_Mesa', 'Plastilina', 'Peluche', 'Otro') NULL DEFAULT 'Otro';";
 				PreparedStatement sentenciaCategoria = conexion.prepareStatement(creacionCategoria);
 				sentenciaCategoria.executeUpdate(creacionCategoria);
-			}
-			String insercionJuguetes = "INSERT IGNORE INTO `juguete` (`idJuguete`, `Nombre`, `Descripcion`, `Precio`, `Cantidad_stock`,`Categoria`) VALUES (1, 'Bloques Básicos', 'Set de 50 piezas', 15.50, 100,'Otro'),(2, 'Muñeca Clásica', 'Muñeca de trapo', 12.00, 50,'Muñeca'),(3, 'Balón de Fútbol', 'Tamaño oficial 5', 19.99, 30,'Pelota'),(4, 'Monopoly', 'Edición Clásica', 25.00, 40,'Juego_De_Mesa'),(5, 'Coche RC', 'Coche teledirigido rojo', 35.50, 20,'Coche'),(6, 'Lego Star wars', 'Set de 500 piezas coleccionable', 35.50, 40,'Otro');";
+			}*/
+			String insercionJuguetes = "INSERT INTO `juguete` (`idJuguete`, `Nombre`, `Descripcion`, `Precio`, `Cantidad_stock`,`Categoria`) VALUES (1, 'Plastilina', 'Set 3 envases', 15.50, 100,'Plastilina'),(2, 'Muñeca Clásica', 'Muñeca de trapo', 12.00, 50,'Muñeca'),(3, 'Balón de Fútbol', 'Tamaño oficial 5', 19.99, 30,'Pelota'),(4, 'Monopoly', 'Edición Clásica', 25.00, 40,'Juego_De_Mesa'),(5, 'Coche RC', 'Coche teledirigido rojo', 35.50, 20,'Otro'),(6, 'Lego Star wars', 'Set de 500 piezas coleccionable', 35.50, 40,'Construccion');";
 			PreparedStatement sentenciaJUGUETE = conexion.prepareStatement(insercionJuguetes);
 			int comprobacionJuguetes = sentenciaJUGUETE.executeUpdate(insercionJuguetes);
 			if ((comprobacionJuguetes > 0)) {
@@ -527,7 +634,7 @@ public class Funciones_y_Consultas {
 		int funciona=0;
 		try {
 			Connection conexion = comprobarConexion();
-			String insercionStand = "INSERT INTO `stand` (`idStand`, `ZONA_idzona`, `Nombre`, `Descripcion`) VALUES (1, 1, 'Stand Bebés', 'Artículos blandos'),(1, 2, 'Stand Lego StarWars', 'Ediciones especiales'),(2, 2, 'Stand Bloques', 'Piezas sueltas'),(1, 3, 'Stand Estrategia', 'Juegos largos'),(1, 4, 'Stand Juegos exteriores', 'Todo tipo de balones y objetos para jugar fuera de casa');";
+			String insercionStand = "INSERT INTO `stand` (`idStand`, `ZONA_idzona`, `Nombre`, `Descripcion`) VALUES (1, 1, 'Stand Bebés', 'Artículos blandos'),(1, 2, 'Stand Lego StarWars', 'Ediciones especiales'),(2, 2, 'Stand Juegos variados', 'Piezas sueltas'),(1, 3, 'Stand Estrategia', 'Juegos largos'),(1, 4, 'Stand Juegos exteriores', 'Todo tipo de balones y objetos para jugar fuera de casa');";
 			PreparedStatement sentenciaStand = conexion.prepareStatement(insercionStand);
 			int comprobacionSTAND = sentenciaStand.executeUpdate(insercionStand);
 			if ((comprobacionSTAND > 0)) {
@@ -582,8 +689,10 @@ public class Funciones_y_Consultas {
 			sentenciaVenta.setInt(7, ventaNueva.idZona);
 			sentenciaVenta.setInt(8,ventaNueva.idJuguete);
 			int ventaRealizada = sentenciaVenta.executeUpdate();
-			if (ventaRealizada >0) {
-				System.out.println("Se ha realizado la venta correctamente");
+			if (ventaRealizada > 0) {
+				System.out.println("Se ha realizado la venta correctamente.");
+			}else {
+				System.out.println("Ha habido un error al realizar la venta.");
 			}
 		}catch(SQLException o) {
 			o.printStackTrace();
@@ -634,7 +743,6 @@ public class Funciones_y_Consultas {
 		try {
 			Connection conexion = comprobarConexion();
 			String consultaEnJuguete = "SELECT precio,Nombre FROM juguete WHERE idJuguete = " + idJugueteVender+";";
-			
 			PreparedStatement sentenciaJuguete = conexion.prepareStatement(consultaEnJuguete);
 			ResultSet resultado = sentenciaJuguete.executeQuery();
 			
@@ -690,8 +798,8 @@ public class Funciones_y_Consultas {
 		return id;
 	}
 	public static int realizarCambio(Cambio cambiarProducto,double montoTotalCompra) {
-		boolean banderaCambio = false;
-		int verificacion=0,valorIDVenta = 0,cantidadEnStockJCanjeado = 0,cantidadEnStockJDevuelto = 0,cantidadCanjeadoAllevar,cantidadJuguetesDevueltos;
+		boolean banderaCambio = false,banderaSalirCambio=false;
+		int verificacion=0,valorIDVenta = 0,cantidadEnStockJCanjeado = 0,cantidadEnStockJDevuelto = 0,cantidadCanjeadoAllevar,cantidadJuguetesDevueltos,opcion;
 		double precioUnidadJugueteCanjeado = 0,precioUnidadJugueteDevuelto = 0,totalJugueteCanjeado;
 		String nombreJugueteCanjeado ="";
 		try {
@@ -749,15 +857,55 @@ public class Funciones_y_Consultas {
 						cantidadCanjeadoAllevar = Jugueteria.controlDeErroresInt();
 						if (cantidadEnStockJCanjeado < cantidadCanjeadoAllevar) {
 							System.err.println("Quieres intercambiar más cantidad de las que hay en Stock... introduce una cantidad que tengamos.");
+							do {
+								System.out.println("¿Quieres seguir realizando el cambio de juguete? si (1) o no (2)");
+								opcion = Jugueteria.controlDeErroresInt();
+								if(opcion==2) {
+									banderaCambio=true;
+									banderaSalirCambio=true;
+									System.out.println("No se ha realizado el cambio del producto.");
+								}else if (opcion==1) {
+									banderaSalirCambio=true;
+								}else {
+									System.out.println("Introduce 1 o 2.");
+								}
+							}while(!banderaSalirCambio);
 						}else {
 							totalJugueteCanjeado = precioUnidadJugueteCanjeado*cantidadCanjeadoAllevar;
 							if (montoTotalCompra < totalJugueteCanjeado) {
-								System.err.println("Has excedido el precio de tu anterior vuelve a introducir una cantidad menor del nuevo producto o que valga lo mismo, no se realizan devoluciones de dinero.");
+								System.err.println("Has excedido el precio de tu compra anterior vuelve a introducir una cantidad menor del nuevo juguete para que su precio no sobrepase, ya que no se realizan devoluciones de dinero.");
+								do {
+									System.out.println("¿Quieres seguir realizando el cambio de juguete? si (1) o no (2)");
+									opcion = Jugueteria.controlDeErroresInt();
+									if(opcion==2) {
+										banderaCambio=true;
+										banderaSalirCambio=true;
+										System.out.println("No se ha realizado el cambio del producto.");
+									}else if (opcion==1) {
+										banderaSalirCambio=true;
+									}else {
+										System.out.println("Introduce 1 o 2.");
+									}
+								}while(!banderaSalirCambio);
 							}else {
-								cantidadEnStockJCanjeado -= cantidadCanjeadoAllevar;
-								cantidadJuguetesDevueltos = (int) (montoTotalCompra/precioUnidadJugueteDevuelto);
-								cantidadEnStockJDevuelto += cantidadJuguetesDevueltos;
-								banderaCambio = true;
+								do {
+									System.out.println("¿Se va a realizar el intercambio estas seguro? si (1) o no (2)");
+									opcion = Jugueteria.controlDeErroresInt();
+									if(opcion==2) {
+										banderaCambio=true;
+										banderaSalirCambio=true;
+										System.out.println("No se ha realizado el cambio del producto.");
+									}else if (opcion==1) {
+										banderaSalirCambio=true;
+										cantidadEnStockJCanjeado -= cantidadCanjeadoAllevar;
+										cantidadJuguetesDevueltos = (int) (montoTotalCompra/precioUnidadJugueteDevuelto);
+										cantidadEnStockJDevuelto += cantidadJuguetesDevueltos;
+										banderaCambio = true;
+									}else {
+										System.out.println("Introduce 1 o 2.");
+									}
+								}while(!banderaSalirCambio);
+								
 							}
 						}
 					}while(!banderaCambio);
@@ -979,6 +1127,27 @@ public class Funciones_y_Consultas {
 	        e.printStackTrace();
 	    }
 	}
+	public static void ListadoProductosPorPrecio() {
+		try {
+			Connection conexion = comprobarConexion();
+			String consulta = "SELECT * FROM juguete order by Precio DESC;";
+			PreparedStatement sentencia = conexion.prepareStatement(consulta);
+			ResultSet resultado = sentencia.executeQuery(consulta);
+			System.out.println("");
+			while (resultado.next()){
+				int idJuguete = resultado.getInt("idJuguete");
+				String nombre = resultado.getString("Nombre");
+				String descripcion = resultado.getString("Descripcion");
+				double precio = resultado.getDouble("Precio");
+				String categoria = resultado.getString("Categoria");
+				System.out.println("Juguete de ID = "+idJuguete+", de nombre = "+nombre+", Descripcion = "+descripcion+", precio = "+precio+", Categoria = "+categoria);
+			}
+			System.out.println("");
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public static int obtencionCargoInicioSesion() {
 		int cargo=0;
 		try {
@@ -1041,7 +1210,7 @@ public class Funciones_y_Consultas {
 	                "`Descripcion` VARCHAR(150) NULL DEFAULT NULL, " +
 	                "`Precio` DOUBLE NULL DEFAULT NULL, " +
 	                "`Cantidad_stock` INT UNSIGNED NOT NULL, " +
-	                "`Categoria` ENUM('Pelota', 'Muñeca', 'Coche', 'Juego_De_Mesa', 'Plastilina', 'Peluche', 'Otro') NULL DEFAULT 'Otro', " +
+	                "`Categoria` ENUM('Pelota', 'Muñeca', 'Construccion', 'Juego_De_Mesa', 'Plastilina', 'Peluche', 'Otro') NULL DEFAULT 'Otro', " +
 	                "PRIMARY KEY (`idJuguete`)) " +
 	                "ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb3");
 

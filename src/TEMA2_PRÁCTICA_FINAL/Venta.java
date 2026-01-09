@@ -71,7 +71,7 @@ public class Venta {
 	}
 	
 	public static void realizarVenta() {
-		int idVenta = Funciones_y_Consultas.contadorDeDatos("venta")+1, empleado = Funciones_y_Consultas.idEmpleadoVenta,idJuguete,stand,zona;
+		int idVenta = Funciones_y_Consultas.contadorDeDatos("venta")+1, empleado = Funciones_y_Consultas.idEmpleadoVenta,idJuguete,stand,zona,idTotalJuguetes = Funciones_y_Consultas.contadorDeDatos("juguete");
 		Date fechaVenta = new Date(System.currentTimeMillis());
 		double totalVenta;
 		boolean bandera = false;
@@ -80,28 +80,33 @@ public class Venta {
 		totalVenta = Funciones_y_Consultas.precioVenta(idJuguete);
 		stand = Funciones_y_Consultas.buscarEnStock(idJuguete,"STAND_idStand");
 		zona = Funciones_y_Consultas.buscarEnStock(idJuguete,"STAND_ZONA_idzona");
-
 		do {
-			System.out.print("¿Que forma de pago elige ? Efectivo (1), Tarjeta(2), Paypal(3): ");
-			int opcion = Jugueteria.controlDeErroresInt();
-			switch (opcion) {
-				case 1:
-					Venta VentaNE = new Venta(idVenta,empleado,idJuguete,stand,zona,fechaVenta,totalVenta,tipoPago.Efectivo);
-					Funciones_y_Consultas.registroVenta(VentaNE);
-					bandera=true;
-					break;
-				case 2:
-					Venta VentaNT = new Venta(idVenta,empleado,idJuguete,stand,zona,fechaVenta,totalVenta,tipoPago.Tarjeta);
-					Funciones_y_Consultas.registroVenta(VentaNT);
-					bandera=true;
-					break;
-				case 3:
-					Venta VentaNETC = new Venta(idVenta,empleado,idJuguete,stand,zona,fechaVenta,totalVenta,tipoPago.paypal);
-					Funciones_y_Consultas.registroVenta(VentaNETC);
-					bandera=true;
-					break;
-				default:
-					System.err.println("ERROR, introduce un número entre 1, 2 y 3.");
+			if ((idJuguete>0)&&(idJuguete<idTotalJuguetes)) {
+			
+				System.out.print("¿Que forma de pago elige ? Efectivo (1), Tarjeta(2), Paypal(3): ");
+				int opcion = Jugueteria.controlDeErroresInt();
+				switch (opcion) {
+					case 1:
+						Venta VentaNE = new Venta(idVenta,empleado,idJuguete,stand,zona,fechaVenta,totalVenta,tipoPago.Efectivo);
+						Funciones_y_Consultas.registroVenta(VentaNE);
+						bandera=true;
+						break;
+					case 2:
+						Venta VentaNT = new Venta(idVenta,empleado,idJuguete,stand,zona,fechaVenta,totalVenta,tipoPago.Tarjeta);
+						Funciones_y_Consultas.registroVenta(VentaNT);
+						bandera=true;
+						break;
+					case 3:
+						Venta VentaNETC = new Venta(idVenta,empleado,idJuguete,stand,zona,fechaVenta,totalVenta,tipoPago.paypal);
+						Funciones_y_Consultas.registroVenta(VentaNETC);
+						bandera=true;
+						break;
+					default:
+						System.err.println("ERROR, introduce un número entre 1, 2 y 3.");
+				}
+			
+			}else {
+				System.out.println("Introduce un juguete disponible");
 			}
 		}while(!bandera);
 		

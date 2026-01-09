@@ -43,17 +43,14 @@ public class Jugueteria {
 	}
 	
 	
-	private static void menuCajero() {
+	private static void menuJuguetes() {
 		boolean banderaSalida = false;
 		System.out.println("\n========= Bienvenido al menú "+Funciones_y_Consultas.nombreUsuario+" =========");
 		do {
 			System.out.println("\n\t1. Registrar un nuevo juguete.\n"
 							+ "\t2. Modificar datos de juguetes.\n"
 							+ "\t3. Eliminar Juguetes.\n"
-							+ "\t4. Realizar una Venta.\n"
-							+ "\t5. Realizar una Devolucion.\n"
-							+ "\t6. Juguetes en un Stand.\n"
-							+ "\t7. Salir.\n");
+							+ "\t4. Salir.\n");
 			System.out.print("Elige una opcion: ");
 			int opcion = controlDeErroresInt();
 			switch (opcion) {
@@ -69,7 +66,7 @@ public class Jugueteria {
 					int idEliminar =0, idFinal = Funciones_y_Consultas.comprobacionDeIDs("juguete", "idJuguete");
 					do {
 						System.out.println("Introduce el ID del juguete a eliminar: ");
-						idEliminar = Jugueteria.controlDeErroresInt();
+						idEliminar = controlDeErroresInt();
 						if ((idEliminar > 0)&&(idEliminar<=idFinal)) {
 							bandera = true;
 						}else {
@@ -80,17 +77,118 @@ public class Jugueteria {
 					Funciones_y_Consultas.eliminarObjetos("juguete", "idJuguete",idEliminar);
 					break;
 				case 4:
+					System.out.println("Saliendo al menú principal.");
+					banderaSalida=true;
+					break;
+				default:
+					System.err.println("Introduce un número del 1 al 4.");
+			}
+		}while(!banderaSalida);
+	}
+	private static void menuEmpleados() {
+		boolean banderaSalida = false;
+		System.out.println("\n========= Bienvenido al menú informativo de la tienda"+Funciones_y_Consultas.nombreUsuario+" =========");
+		do {
+			System.out.println("\n\t1. Registrar un nuevo empleado.\n"
+							+ "\t2. Modificar datos de un empleado.\n"
+							+ "\t3. Eliminar empleado.\n"
+							+ "\t4. Salir.\n");
+			System.out.print("Elige una opcion: ");
+			int opcion = controlDeErroresInt();
+			switch (opcion) {
+				case 1:
+					Empleado.nuevoEmpleado();
+					break;
+				case 2:
+					Funciones_y_Consultas.updateDatosEmpleados();
+					break;
+				case 3:
+					boolean bandera = false;
+					int idEliminar =0, idFinal = Funciones_y_Consultas.comprobacionDeIDs("empleado", "idEMPLEADO");
+					do {
+						System.out.println("Introduce el ID del empleado a eliminar: ");
+						idEliminar = controlDeErroresInt();
+						if ((idEliminar > 0)&&(idEliminar<=idFinal)) {
+							bandera = true;
+						}else {
+							System.out.println("Introduce un Id que exista en la base de datos");
+						}
+					}while(!bandera);
+					
+					Funciones_y_Consultas.eliminarObjetos("empleado", "idEMPLEADO",idEliminar);
+					break;
+				case 4:
+					System.out.println("Saliendo al menú principal.");
+					banderaSalida=true;
+					break;
+				default:
+					System.err.println("Introduce un número del 1 al 4.");
+			}
+		}while(!banderaSalida);
+	}
+	private static void menuVentas() {
+		boolean banderaSalida = false;
+		System.out.println("\n========= Bienvenido al menú "+Funciones_y_Consultas.nombreUsuario+" =========");
+		do {
+			System.out.println("\n\t1. Realizar una Venta.\n"
+							+ "\t2. Realizar una Devolucion.\n"
+							+ "\t3. Ver el producto más vendido.\n"
+							+ "\t4. Los empleados que más venden.\n"
+							+ "\t5. Salir.\n");
+			System.out.print("Elige una opcion: ");
+			int opcion = controlDeErroresInt();
+			switch (opcion) {
+				case 1:
 					Funciones_y_Consultas.mostrarJuguetes();
 					Venta.realizarVenta();
 					break;
-				case 5:
+				case 2:
 					Cambio.Devolucion();
 					break;
-				case 6:
-					Funciones_y_Consultas.mostrarStand();
+				case 3:
+					Funciones_y_Consultas.ProductoMasVendido();
+					break;
+				case 4:
+					Funciones_y_Consultas.reporteEmpleadosTopVentas();
+					break;
+				case 5:
+					System.out.println("Saliendo al menú principal.");
+					banderaSalida=true;
+					break;
+				default:
+					System.err.println("Introduce un número del 1 al 5.");
+			}
+		}while(!banderaSalida);
+	}
+	private static void menuTiendas() {
+		boolean banderaSalida = false;
+		System.out.println("\n========= Bienvenido al menú informativo de la tienda "+Funciones_y_Consultas.nombreUsuario+" =========");
+		do {
+			System.out.println("\n\t1. Todos los juguetes que están disponibles en un stand específicos.\n"
+							+ "\t2. Ventas realizados ordenadas por mes.\n"
+							+ "\t3. Ventas realizadas por un empleado en un mes.\n"
+							+ "\t4. Cambios de Objetos y motivos.\n"
+							+ "\t5. Lista de los productos ordenados por precio de mayor a menor.\n"
+							+ "\t6. Salir.\n");
+			System.out.print("Elige una opcion: ");
+			int opcion = controlDeErroresInt();
+			switch (opcion) {
+				case 1:
 					Funciones_y_Consultas.mostrarJugueteStand();
 					break;
-				case 7:
+				case 2:
+					Funciones_y_Consultas.VentasPorMes();
+					break;
+				case 3:
+					Funciones_y_Consultas.VentasEmpleadoPorMes();
+					break;
+				case 4:
+					Funciones_y_Consultas.mostrarCambios();
+					break;
+				case 5:
+					Funciones_y_Consultas.ListadoProductosPorPrecio();
+					break;
+				case 6:
 					System.out.println("Saliendo...");
 					banderaSalida=true;
 					break;
@@ -99,77 +197,39 @@ public class Jugueteria {
 			}
 		}while(!banderaSalida);
 	}
-	
-	private static void menuJefe() {
+	private static void menuPrincipal() {
 		boolean banderaSalida = false;
 		System.out.println("\n========= Bienvenido al menú "+Funciones_y_Consultas.nombreUsuario+" =========");
 		do {
-			System.out.println("\n\t1. Crear un nuevo empleado.\n"
-							+ "\t2. Modificar datos de un empleado.\n"
-							+ "\t3. Eliminar empleado.\n"
-							+ "\t4. Los empleados que más venden.\n"
-							+ "\t5. Ver el Producto más vendido.\n"
-							+ "\t6. Ventas realizadas en un mes.\n"
-							+ "\t7. Ventas realizadas por un empleado en un mes.\n"
-							+ "\t8. Cambios de Objetos y motivos.\n"
-							+ "\t9. Salir.\n");
+			System.out.println("\n\t1. Juguetes.\n"
+							+ "\t2. Empleado.\n"
+							+ "\t3. Ventas.\n"
+							+ "\t4. Datos de la tienda.\n"
+							+ "\t5. Salir.\n");
 			System.out.print("Elige una opcion: ");
 			int opcion = controlDeErroresInt();
 			switch (opcion) {
-			case 1:
-				Empleado.nuevoEmpleado();
-				break;
-			case 2:
-				Funciones_y_Consultas.updateDatosEmpleados();
-				break;
-			case 3:
-				boolean bandera = false;
-				int idEliminar =0, idFinal = Funciones_y_Consultas.comprobacionDeIDs("empleado", "idEMPLEADO");
-				do {
-					System.out.println("Introduce el ID del empleado a eliminar: ");
-					idEliminar = Jugueteria.controlDeErroresInt();
-					if ((idEliminar > 0)&&(idEliminar<=idFinal)) {
-						bandera = true;
-					}else {
-						System.out.println("Introduce un Id que exista en la base de datos");
-					}
-				}while(!bandera);
-				
-				Funciones_y_Consultas.eliminarObjetos("empleado", "idEMPLEADO",idEliminar);
-				break;
-			case 4:
-				Funciones_y_Consultas.reporteEmpleadosTopVentas();
-				break;
-			case 5:
-				Funciones_y_Consultas.ProductoMasVendido();
-				break;
-			case 6:
-				Funciones_y_Consultas.VentasPorMes();
-				break;
-			case 7:
-				Funciones_y_Consultas.VentasEmpleadoPorMes();
-				break;
-			case 8:
-				Funciones_y_Consultas.mostrarCambios();
-				break;
-			case 9:
-				System.out.println("Saliendo...");
-				banderaSalida=true;
-				break;
-			default:
-					
-		}
-	}while(!banderaSalida);
-}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+				case 1:
+					menuJuguetes();
+					break;
+				case 2:
+					menuEmpleados();
+					break;
+				case 3:
+					menuVentas();
+					break;
+				case 4:
+					menuTiendas();
+					break;
+				case 5:
+					System.out.println("Saliendo...");
+					banderaSalida=true;
+					break;
+				default:
+					System.err.println("Introduce un número del 1 al 5.");
+			}
+		}while(!banderaSalida);
+	}
 	
 	
 	public static void main(String[] args) {
@@ -179,10 +239,10 @@ public class Jugueteria {
 		int empleado = Funciones_y_Consultas.obtencionCargoInicioSesion();
 		switch (empleado) {
 			case 1:
-				menuCajero();
+				menuPrincipal();
 				break;
 			case 2:
-				menuJefe();
+				menuPrincipal();
 				break;
 			default:
 				System.out.println("ERROR, escribe un id correspondiente");

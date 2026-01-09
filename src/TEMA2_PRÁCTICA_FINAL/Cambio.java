@@ -85,28 +85,33 @@ public class Cambio {
 	}
 	
 	public static void Devolucion() {
-		int id = Funciones_y_Consultas.contadorDeDatos("cambio")+1,idStand_Original=0,idzona_Original=0,idJuguete_Original  ,idStand_Nuevo = 0,idzona_Nuevo = 0,idJuguete_Nuevo  ,idEMPLEADO=0,comprobacion;
+		int id = Funciones_y_Consultas.contadorDeDatos("cambio")+1,idTotalJuguetes = Funciones_y_Consultas.contadorDeDatos("juguete"),idStand_Original=0,idzona_Original=0,idJuguete_Original  ,idStand_Nuevo = 0,idzona_Nuevo = 0,idJuguete_Nuevo  ,idEMPLEADO=0,comprobacion;
 		double montoTotalCompra;
 		Date fecha = new Date(System.currentTimeMillis());
 		String motivo;
 		boolean bandera =false;
 		do {
-			Funciones_y_Consultas.mostrarVentas();
-			System.out.print("Introduce el ID del juguete que quieres devolver: ");
-			idJuguete_Original = Jugueteria.controlDeErroresInt();
+			Funciones_y_Consultas.mostrarJuguetes();
 			System.out.print("Introduce el ID del juguete que quieres cambiar por el anterior: ");
 			idJuguete_Nuevo = Jugueteria.controlDeErroresInt();
-			System.out.print("¿Cuanto fue el monto total de tu compra?: ");
-			montoTotalCompra = Jugueteria.controlDeErroresDouble();
-			Jugueteria.entrada.nextLine();
-			System.out.println("Dinos los motivos de tu devolucion : ");
-			motivo = Jugueteria.entrada.nextLine();
-			Cambio inicioCambioProducto = new Cambio(id, idStand_Original, idzona_Original,idJuguete_Original, idStand_Nuevo, idzona_Nuevo,idJuguete_Nuevo, idEMPLEADO, fecha, motivo);
-			comprobacion = Funciones_y_Consultas.realizarCambio(inicioCambioProducto,montoTotalCompra);
-			if (comprobacion == 0) {
-				System.err.println("Introduce bien el id del juguete o el monto de compra.");
+			if((idJuguete_Nuevo>0)&&(idJuguete_Nuevo<idTotalJuguetes)) {
+				Funciones_y_Consultas.mostrarVentas();
+				System.out.print("Introduce el ID del juguete que quieres devolver: ");
+				idJuguete_Original = Jugueteria.controlDeErroresInt();
+				System.out.print("¿Cuanto fue el monto total de tu compra?: ");
+				montoTotalCompra = Jugueteria.controlDeErroresDouble();
+				Jugueteria.entrada.nextLine();
+				System.out.println("Dinos los motivos de tu devolucion : ");
+				motivo = Jugueteria.entrada.nextLine();
+				Cambio inicioCambioProducto = new Cambio(id, idStand_Original, idzona_Original,idJuguete_Original, idStand_Nuevo, idzona_Nuevo,idJuguete_Nuevo, idEMPLEADO, fecha, motivo);
+				comprobacion = Funciones_y_Consultas.realizarCambio(inicioCambioProducto,montoTotalCompra);
+				if (comprobacion == 0) {
+					System.err.println("Introduce correctamente el id del juguete o el monto de compra.");
+				}else {
+					bandera = true;
+				}
 			}else {
-				bandera = true;
+				System.out.println("Escribe un id disponible en los juguetes");
 			}
 		}while(!bandera);
 	}
