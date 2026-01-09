@@ -70,7 +70,8 @@ public class creacionEmpleadosYPlantas {
 
 			        // Avanzar la posición según los bytes leídos (4 + 4 + 4 = 12 bytes)
 			        posicion += 12;
-			    } 
+			} 
+			System.out.println("Objetos leídos correctamente desde plantas.dat\n");
 		}catch (IOException e) {
             e.printStackTrace();
         }
@@ -91,13 +92,13 @@ public class creacionEmpleadosYPlantas {
 	public static ArrayList<Empleado> leerEmpleados() {
         ArrayList<Empleado> listaEmpleados = null;
 
-        try (FileInputStream ficherolectura = new FileInputStream("Emple//empleado.dat");
+        try (FileInputStream ficherolectura = new FileInputStream("Empleados//empleado.dat");
              ObjectInputStream lectura = new ObjectInputStream(ficherolectura)) {
 
             // Leer el ArrayList de Empleado desde el archivo
             listaEmpleados = (ArrayList<Empleado>) lectura.readObject();
 
-            System.out.println("Objetos leídos correctamente desde empleado.dat");
+            System.out.println("Objetos leídos correctamente desde empleado.dat\n");
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

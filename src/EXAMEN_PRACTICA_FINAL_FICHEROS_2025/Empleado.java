@@ -2,6 +2,10 @@ package EXAMEN_PRACTICA_FINAL_FICHEROS_2025;
 import java.io.Serializable;
 
 public class Empleado implements Serializable{
+	 /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	 private int identificacion;
 	 private String nombre;
 	 private String password;
