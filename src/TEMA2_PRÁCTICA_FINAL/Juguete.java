@@ -60,7 +60,7 @@ public class Juguete {
 		System.out.print("Nombre del juguete: ");
 		String nombre = Jugueteria.entrada.next();
 		System.out.print("Descripcion del juguete: ");
-		String descripcion = Jugueteria.entrada.nextLine();
+		String descripcion = Jugueteria.entrada.next();
 		System.out.print("Precio del juguete : ");
 		double precio = Jugueteria.controlDeErroresInt();
 		System.out.print("Cantidad en stock del juguete: ");

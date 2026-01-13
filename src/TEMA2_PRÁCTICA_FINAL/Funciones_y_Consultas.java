@@ -14,8 +14,8 @@ import java.util.Scanner;
 public class Funciones_y_Consultas {
 	private static String url = "jdbc:mysql://localhost:3306/jugueteriaSamuelCarias";
 	private static String usuario = "root";
-	private static String passwordCASA = "casaSQL";
-	//private static String passwordINSTI = "cfgs";
+	//private static String passwordCASA = "casaSQL";
+	private static String passwordINSTI = "cfgs";
 	private static Scanner entrada = new Scanner(System.in);
 	public static String nombreUsuario;
 	public static int idEmpleadoVenta;
@@ -27,7 +27,7 @@ public class Funciones_y_Consultas {
 		Connection conexion = null;
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			conexion = DriverManager.getConnection(url,usuario,passwordCASA);
+			conexion = DriverManager.getConnection(url,usuario,passwordINSTI);
 			//System.out.println("Se ha conectado a la base de datos.");
 			return conexion;
 		} catch (ClassNotFoundException|SQLException e) {
@@ -288,7 +288,7 @@ public class Funciones_y_Consultas {
 				}
 				bandera = true;
 			}else{
-				System.out.println("Introduce un valor entre el 1 y 4.");
+				System.err.println("Introduce un valor entre el 1 y 4.");
 			}
 			}while(!bandera);
 			
@@ -424,7 +424,7 @@ public class Funciones_y_Consultas {
 		boolean bandera = false;
 		try {
 			Connection conexion = comprobarConexion();
-			String consulta = "update juguete set Precio = ?, Stock = ? WHERE idJuguete = ?;";
+			String consulta = "update juguete set Precio = ?, Cantidad_stock = ? WHERE idJuguete = ?;";
 			PreparedStatement sentencia = conexion.prepareStatement(consulta);
 			int parametroID;
 			int idFinal = comprobacionDeIDs("juguete","idJuguete");
@@ -434,12 +434,12 @@ public class Funciones_y_Consultas {
 				if ((parametroID > 0)&&(parametroID<=idFinal)) {
 					bandera = true;
 				}else {
-					System.out.println("Introduce un Id que exista en la base de datos");
+					System.err.println("Introduce un Id que exista en la base de datos");
 				}
 			}while(!bandera);
 			System.out.println("Introduce el nuevo precio del juguete de ID "+parametroID+".");
 			double parametroPrecio = Jugueteria.controlDeErroresDouble();
-			System.out.println("Introduce la nueva cantidad del juguete de ID"+parametroID+".");
+			System.out.println("Introduce la nueva cantidad del juguete de ID "+parametroID+".");
 			int parametroCantidad = Jugueteria.controlDeErroresInt();
 			
 			sentencia.setDouble(1,parametroPrecio);
@@ -470,7 +470,7 @@ public class Funciones_y_Consultas {
 				if ((parametroID > 0)&&(parametroID<=idFinal)) {
 					bandera = true;
 				}else {
-					System.out.println("Introduce un Id que exista en la base de datos");
+					System.err.println("Introduce un Id que exista en la base de datos");
 				}
 			}while(!bandera);
 			
@@ -671,7 +671,7 @@ public class Funciones_y_Consultas {
 			if ((comprobacionEmpleados > 0)&&(comprobacionZona > 0)&&(comprobacionJuguetes > 0)&&(comprobacionStand > 0)&&(comprobacionStock > 0)) {
 				System.out.println("Se han cargados todos los datos iniciales de la base de datos correctamente.");
 			}else {
-				System.out.println("No se han podido cargar todos los datos.");
+				System.err.println("No se han podido cargar todos los datos.");
 			}
 	}
 	
@@ -692,7 +692,7 @@ public class Funciones_y_Consultas {
 			if (ventaRealizada > 0) {
 				System.out.println("Se ha realizado la venta correctamente.");
 			}else {
-				System.out.println("Ha habido un error al realizar la venta.");
+				System.err.println("Ha habido un error al realizar la venta.");
 			}
 		}catch(SQLException o) {
 			o.printStackTrace();
@@ -863,11 +863,11 @@ public class Funciones_y_Consultas {
 								if(opcion==2) {
 									banderaCambio=true;
 									banderaSalirCambio=true;
-									System.out.println("No se ha realizado el cambio del producto.");
+									System.err.println("No se ha realizado el cambio del producto.");
 								}else if (opcion==1) {
 									banderaSalirCambio=true;
 								}else {
-									System.out.println("Introduce 1 o 2.");
+									System.err.println("Introduce 1 o 2.");
 								}
 							}while(!banderaSalirCambio);
 						}else {
@@ -884,7 +884,7 @@ public class Funciones_y_Consultas {
 									}else if (opcion==1) {
 										banderaSalirCambio=true;
 									}else {
-										System.out.println("Introduce 1 o 2.");
+										System.err.println("Introduce 1 o 2.");
 									}
 								}while(!banderaSalirCambio);
 							}else {
@@ -902,7 +902,7 @@ public class Funciones_y_Consultas {
 										cantidadEnStockJDevuelto += cantidadJuguetesDevueltos;
 										banderaCambio = true;
 									}else {
-										System.out.println("Introduce 1 o 2.");
+										System.err.println("Introduce 1 o 2.");
 									}
 								}while(!banderaSalirCambio);
 								
@@ -971,7 +971,7 @@ public class Funciones_y_Consultas {
 		        if (mes > 0 && mes <= 12) {
 		        	bandera=true;
 		        }else {
-		        	System.out.println("Escribe un número entre el 1 al 12.");
+		        	System.err.println("Escribe un número entre el 1 al 12.");
 		        }
 	        }while(!bandera);
 	        
@@ -1020,7 +1020,7 @@ public class Funciones_y_Consultas {
 			        if (mes > 0 && mes <= 12) {
 			        	bandera=true;
 			        }else {
-			        	System.out.println("Escribe un número entre el 1 al 12.");
+			        	System.err.println("Escribe un número entre el 1 al 12.");
 			        }
 		        }while(!bandera);
 		        
@@ -1181,7 +1181,7 @@ public class Funciones_y_Consultas {
 	    // Quitamos "/jugueteria" de la URL temporalmente para poder crearla si no existe.
 	    String urlServer = "jdbc:mysql://localhost:3306/?useSSL=false&allowPublicKeyRetrieval=true";
 	    
-	    try (Connection conexion = DriverManager.getConnection(urlServer, usuario, passwordCASA);
+	    try (Connection conexion = DriverManager.getConnection(urlServer, usuario, passwordINSTI);
 	         java.sql.Statement sentencia = conexion.createStatement()) {
 
 	        sentencia.execute("SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0");

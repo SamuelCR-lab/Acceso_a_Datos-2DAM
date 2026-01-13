@@ -13,13 +13,15 @@ public class Jugueteria {
 				entero=entrada.nextInt();
 				if (entero >= 0) {
 					datosCorrectos=false;
+				
 				} else {
 	                System.err.println("ERROR. El número no puede ser negativo.");
 	            }
 			}else {
 				System.err.println("ERROR. Introduce un número");
-				entrada.next();
+				
 			}
+			entrada.nextLine();
 		}while(datosCorrectos);	
 		return entero;
 	}
@@ -245,7 +247,7 @@ public class Jugueteria {
 				menuPrincipal();
 				break;
 			default:
-				System.out.println("ERROR, escribe un id correspondiente");
+				System.err.println("ERROR, escribe un id correspondiente");
 		}
 		System.out.println("Recuerda, siempre con una sonrisa para los clientes.\nJugueteria S <3 S");
 	}
