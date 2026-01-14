@@ -107,7 +107,7 @@ public class MenuGestores {
 	        	}
 	        }
         }else {
-        	System.out.println("La planta con el código = "+codigoBaja+", no se ha encontrado.");
+        	System.err.println("La planta con el código = "+codigoBaja+", no se ha encontrado.");
         }
         Principal.plantas = catalogoPlantas;
         Principal.guardarPlantasSalir();
@@ -181,7 +181,7 @@ public class MenuGestores {
 		 		                }
 		 		            }while(!bandera);
 		        		}else {
-		        			System.out.println("No puedes rescatar esta planta porque no esta dada de baja.");
+		        			System.err.println("No puedes rescatar esta planta porque no esta dada de baja.");
 		        			break;
 		        		}
 		        	}
@@ -189,11 +189,11 @@ public class MenuGestores {
 			        Principal.guardarPlantasSalir();
 			        Principal.Catalogo(1);
 		        }else {
-		        	System.out.println("Planta no encontrada. Escribe un número de planta que se encuentre en el catálogo");
+		        	System.err.println("Planta no encontrada. Escribe un número de planta que se encuentre en el catálogo");
 		        }
 		        
         	}else {
-        		System.out.println("No hay plantas dadas de baja, para que puedas recuperarlas.");
+        		System.err.println("No hay plantas dadas de baja, para que puedas recuperarlas.");
         	}
         	break;
         case 2:
@@ -213,20 +213,20 @@ public class MenuGestores {
 			                	plantaModificada.stock = stockTemp;
 			                	bandera =true;
 			                }else {
-			                	System.out.println("El stock introducido no puede ser menor ni igual que 0\n");
+			                	System.err.println("El stock introducido no puede ser menor ni igual que 0\n");
 			                }
 			            }while(!bandera);
 		                System.out.println("La planta de ID = "+plantaModificada.codigo+", ha sido modificada: "+plantaModificada);
 		            }
 		        }
 	        }else {
-	        	System.out.println("Planta no encontrada.");
+	        	System.err.println("Planta no encontrada.");
 	        }
 	        Principal.plantas = catalogoPlantas;
 	        Principal.guardarPlantasSalir();
 	        break;
         default:
-        	System.out.println("Introduce un 1 o 2.");
+        	System.err.println("Introduce un 1 o 2.");
         }
     }
 
@@ -280,7 +280,7 @@ public class MenuGestores {
             guardarEmpleadosBaja();
             System.out.println("Empleado "+empleadoBaja.getNombre()+" de ID: "+empleadoBaja.getIdentificacion()+" ha sido dado de baja correctamente.");
         } else {
-            System.out.println("Error: Empleado no encontrado.");
+            System.err.println("Error, el empleado no encontrado.");
         }
     }
 
@@ -308,7 +308,7 @@ public class MenuGestores {
 	            guardarEmpleadosBaja();
 	            System.out.println("Empleado "+empleadoRecuperados.getNombre()+" de ID: "+empleadoRecuperados.getIdentificacion()+" ha sido recuperado.");
 	        } else {
-	            System.out.println("Error: Empleado no se ha encontrado en la lista de bajas.");
+	            System.err.println("Error: empleado no se ha encontrado en la lista de bajas.");
 	        }
         }
     }
@@ -433,7 +433,7 @@ public class MenuGestores {
                     	salir = true; 
                     	break;
                     default: 
-                    	System.out.println("Escribe bien, intentalo de nuevo.");
+                    	System.err.println("Escribe bien, intentalo de nuevo.");
                 }
         } while (!salir);
     }

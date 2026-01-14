@@ -273,7 +273,7 @@ public class Principal {
 						guardarPlantasSalir();
 					}
 				}else {
-					System.out.println("No hay suficiente Stock, introduce menos cantidad o lleva otra planta.");
+					System.err.println("No hay suficiente Stock, introduce menos cantidad o lleva otra planta.");
 				}
 			}
 		}
@@ -281,7 +281,7 @@ public class Principal {
 			plantas.remove(plantaSinStock);
 		}*/
 		if(plantasVenta == null)
-		System.out.println("No se ha encontrado una planta con ese código.");
+		System.err.println("No se ha encontrado una planta con ese código.");
 	}
 	public static void generarVentas() {
 		boolean bandera =false;
@@ -323,11 +323,11 @@ public class Principal {
 							contador=0;
 							resCorrecta=true;
 						}else {
-							System.out.println("\nEscribe solo 1 o 2.\n");
+							System.err.println("\nEscribe solo 1 o 2.\n");
 						}
 						
 					}else {
-						System.out.println("\nEscribe solo 1 o 2.\n");
+						System.err.println("\nEscribe solo 1 o 2.\n");
 					}
 					
 				}while(!resCorrecta);
@@ -339,12 +339,12 @@ public class Principal {
 	
 	public static void eliminarTicketTemp(){
 		if (iDTickets == 0) { 
-	        System.out.println("No hay ningún ticket temporal que borrar.");
+	        System.err.println("No hay ningún ticket temporal que borrar.");
 	    }else {
 	    File ficheroABorrar = new File("TICKETS//Tickets"+iDTickets+".txt");
 		    if (ficheroABorrar.exists()) {
 		        if (ficheroABorrar.delete()) {
-		            System.out.println("\nVenta cancelada. El ticket temporal "+ficheroABorrar.getName()+" ha sido borrado.\n");
+		            System.err.println("\nVenta cancelada. El ticket temporal "+ficheroABorrar.getName()+" ha sido borrado.\n");
 		        }
 		    }
 	    }
@@ -515,7 +515,7 @@ public class Principal {
 	    					 Catalogo(0);
 	    				 }
 			        } else {
-			             System.out.println("Advertencia: No se encontró la planta con código "+plantasADevolver.getCodigo()+" en el catálogo actual.");
+			             System.err.println("Advertencia: No se encontró la planta con código "+plantasADevolver.getCodigo()+" en el catálogo actual.");
 			        }
 	    		}
 	    	 }
@@ -570,7 +570,7 @@ public class Principal {
 				break;
 				
 			default:
-				System.out.println("Escribe bien, por favor.");	
+				System.err.println("Escribe bien, por favor.");	
 			}
 		}while(!bandera);
 	}
@@ -579,7 +579,7 @@ public class Principal {
 	public static void main(String[] args) {
 		boolean bandera = true;
 		if(!ficheroPlantasXML.exists()) {
-			System.out.println("No se ha encontra el archivo de Plantas.xml, por lo que no se puede iniciar el programa.");
+			System.err.println("No se ha encontra el archivo de Plantas.xml, por lo que no se puede iniciar el programa.");
 			System.exit(0);
 		}
 		System.out.println("============== Bienvenido al vivero Carías Ramos ==============\n");
@@ -595,7 +595,7 @@ public class Principal {
 					menuVendedores();
 					break;
 				default:
-					System.out.println("Escribe bien, por favor.");	
+					System.err.println("Escribe bien, por favor.");	
 				}
 			
 			
